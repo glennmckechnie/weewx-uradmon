@@ -18,9 +18,22 @@ class uradmonInstaller(ExtensionInstaller):
                'https://www.uradmonitor.com',
             author="Glenn McKechnie",
             author_email="glenn.mckechnie@gmail.com",
+            process_services='user.uradmon.UradMon',
             config={
+                    'UradMon': {
+                        'data_binding': 'uradmon_binding'},
+                'DataBindings': {
+                    'uradmon_binding': {
+                            'database': 'uradmon_sqlite',
+                            'table_name': 'archive',
+                            'manager': 'weewx.manager.DaySummaryManager',
+                            'schema': 'user.uradmon.schema'}},
+                    'Databases': {
+                        'uradmon_sqlite': {
+                        'database_name': 'uradmon.sdb',
+                        'driver': 'weedb.sqlite'}},
                 'StdReport': {
-                    uradmon': {
+                    'uradmon': {
                         'skin': 'uradmon',
                         'HTML_ROOT': 'uradmon'
                         }}},
@@ -28,7 +41,7 @@ class uradmonInstaller(ExtensionInstaller):
                    ['bin/user/uradmon.py']),
                    ('skins/uradmon',
                    ['skins/uradmon/skin.conf',
-                    'skins/uradmon/index.php.tmpl',
+                    'skins/uradmon/index.html.tmpl',
                     'skins/uradmon/uradmon.inc',
                     ]),
                    ('skins/uradmon/font',
