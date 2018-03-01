@@ -11,33 +11,32 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="refresh" content="900">
     <title>$station.location</title>
-    <link rel="icon" type="image/png" href="favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="standard.css"/>
-    <script type="text/javascript" src="standard.js"></script>
+    <link rel="icon" type="image/png" href="../favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../standard.css"/>
+    <script type="text/javascript" src="../standard.js"></script>
   </head>
 
   <body onload="setup();">
-    #include "titlebar.inc"
+    #include "inc/titlebar.inc"
     <div id="contents">
       <div id="widget_group">
         #if $current.UV.raw >= 2.5
             #include "sunsmart.inc"
         #end if
-        #include "about.inc"
-        #include "blitzortung.inc"
-        #include "current.inc"
-        #include "smforecast.inc"
-        #include "cfaforecast.inc"
-        #include "rainforecast.inc"
-        #include "linkswxobs.inc"
-        #include "links.inc"
-        #include "radar.inc"
-        #include "satellite.inc"
-        #include "sunmoon.inc"
-        #include "sensors.inc"
-        #include "hilo.inc"
-        #include "map.inc"
-        #include "sqlbackup.inc"
+        #include "inc/about.inc"
+        #include "inc/blitzortung.inc"
+        #include "inc/current.inc"
+        #include "inc/cfaforecast.inc"
+        #include "inc/rainforecast.inc"
+        #include "inc/linkswxobs.inc"
+        #include "inc/links.inc"
+        #include "inc/radar.inc"
+        #include "inc/satellite.inc"
+        #include "inc/sunmoon.inc"
+        #include "inc/sensors.inc"
+        #include "inc/hilo.inc"
+        #include "inc/map.inc"
+        #include "inc/sqlbackup.inc"
       </div>
 
       <div id="plot_group">
@@ -100,7 +99,7 @@
      Fire rating image is courtesy of CFA Victoria, 2017
     </p>
 
-    #include "analytics.inc"
+    #include "inc/analytics.inc"
 
 </body>
 
