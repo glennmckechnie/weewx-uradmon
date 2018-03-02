@@ -16,6 +16,7 @@ import mysql.connector
 import sys
 from array import array
 import urllib2
+import socket
 
 import syslog
 
@@ -43,9 +44,6 @@ schema = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
     ('usUnits',  'INTEGER NOT NULL'),
     ('interval', 'INTEGER NOT NULL'),
-    #('uuid',     'INTEGER'),
-    #('utype',    'INTEGER'),
-    #('udetect',  'TEXT'),
     ('uvolt',    'INTEGER'),
     ('ucpm',     'REAL'),
     ('utemp',    'REAL'),
@@ -57,6 +55,7 @@ schema = [
     ('upm25',    'INTEGER'),
     ('uptime',   'INTEGER')
 ]
+
 
 def get_default_binding_dict():
     return {'database': 'uradmon_sqlite',
@@ -80,8 +79,7 @@ class UradMon(weewx.engine.StdService):
         super(UradMon, self).__init__(engine, config_dict)
         self.d_binding = '1'
         d = config_dict.get('UradMon', {})
-        f = config_dict.get('DataBindings'),('uradmon_binding', {})
-        loginf("       f is {} %s" % d)
+        #f = config_dict.get('DataBindings'),('uradmon_binding', {})
 
         self.binding = d.get('binding', 'archive')
         self.data_binding = d.get('data_binding', 'uradmon_binding')
@@ -95,7 +93,6 @@ class UradMon(weewx.engine.StdService):
             if dbcol != memcol:
                 raise Exception('uradmon: schema mismatch: %s != %s' %
                                     (dbcol, memcol))
-
 
         if self.binding == 'archive':
             self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
@@ -120,18 +117,30 @@ class UradMon(weewx.engine.StdService):
         u'detector': u'SI29BG', u'type': u'8', u'id': u'82000079', u'pm25': 4,
         u'temperature': 23.07}}
         """
+        self.rad_addr = '192.168.0.235'
 
         url = "http://" + self.rad_addr + "/j"
 
-        try:
-            _response = urllib2.urlopen(url)
-        except (urllib2.URLError), e:
-            syslog.syslog(syslog.LOG_DEBUG,
-                          "uradmon:  Failed download attempt: %s" %e)
-        # useful! https://stackoverflow.com/questions/13921910/python-urllib2-receive-json-response-from-url
-        # data = json.loads(respons.read().decode(respons.info().get_param('charset') or 'utf-8'))
+        #stackoverflow.com/questions/9446387/how-to-retry-urllib2-request-when-fails
+        ntries = 5
+        assert ntries >= 1
+        for _ in range(ntries):
+            try:
+                loginf("uradmon:  _response on ntries = %s " %_)
+                _response = urllib2.urlopen(url, timeout=3)
+                break # success
+            except Exception as err:
+                loginf("uradmon:  timeout raised: %s : ntries %s" %(err, _))
+        else: # all ntries failed
+            loginf("uradmon:  err raised: %s after %s ntries" %(err, _))
+            raise err # re-raise the last timeout error
+
         json_string = json.loads(_response.read().decode('utf-8'))
-        loginf(" json_string is %s" % json_string)
+        #loginf(" json_string is %s" % json_string)
+
+        self.uuid = json_string["data"]["id"]
+        self.utype = json_string["data"]["type"]
+        self.udetect = json_string["data"]["detector"]
 
         timestamp = int(time.time());
         int_one = 1
@@ -139,9 +148,6 @@ class UradMon(weewx.engine.StdService):
         rec = {'dateTime': timestamp,
                'usUnits': weewx.METRIC,
                'interval': int_one,
-               #'uuid': json_string["data"]["id"],
-               #'utype': json_string["data"]["type"],
-               #'udetect': json_string["data"]["detector"],
                'uvolt': json_string["data"]["voltage"],
                'ucpm': json_string["data"]["cpm"],
                'utemp': json_string["data"]["temperature"],
