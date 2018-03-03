@@ -71,6 +71,7 @@ class UradMonSkin(SearchList):
     def __init__(self, generator):
         SearchList.__init__(self, generator)
 
+        rad_addr = self.generator.skin_dict['device'].get('uradmon_address','')
         self.rad_addr = self.generator.skin_dict['device'].get('uradmon_address','')
         self.sql_host = self.generator.skin_dict['mysql'].get('dbhost','')
         self.sql_db = self.generator.skin_dict['mysql'].get('db','')
@@ -94,7 +95,7 @@ class UradMon(weewx.engine.StdService):
             dbcol = dbm.connection.columnsOf(dbm.table_name)
             memcol = [x[0] for x in dbm_dict['schema']]
             if dbcol != memcol:
-                raise Exception('uradmon: schema mismatch: %s != %s' %
+                raise Exception('schema mismatch: %s != %s' %
                                     (dbcol, memcol))
 
         if self.binding == 'archive':
@@ -125,21 +126,21 @@ class UradMon(weewx.engine.StdService):
         url = "http://" + self.rad_addr + "/j"
 
         #stackoverflow.com/questions/9446387/how-to-retry-urllib2-request-when-fails
-        ntries = 1
-        assert ntries >= 1
-        for _ in range(ntries):
-            loginf("uradmon: starting attempt number %s to monitor" %_)
+        attempts = 2
+        assert attempts >= 1
+        for _ in range(attempts):
+            loginf("connection attempt %s to %s" %(_, self.rad_addr))
             try:
                 _response = urllib2.urlopen(url, timeout=3)
                 break # success
             except Exception as err:
-                loginf("uradmon: error raised: %s @ retry %s to monitor" %(err, _))
-                ntries = None
-        else: # all ntries failed
-            loginf("uradmon: No data fetched, %s after %s retries to monitor" %(err, _))
-            ntries = None
-        if ntries is not None:
-            loginf("uradmon: monitor responsed on try number %s " %_)
+                loginf("%s error on attempt %s to %s" %(err, _, self.rad_addr))
+                attempts = None
+        else: # all attempts failed
+            loginf("No data fetched, %s after %s attempts to %s" %(err, _, self.rad_addr))
+            attempts = None
+        if attempts is not None:
+            loginf("%s responded on attempt %s" %(self.rad_addr,_))
             json_string = json.loads(_response.read().decode('utf-8'))
 
             self.uuid = json_string["data"]["id"]
