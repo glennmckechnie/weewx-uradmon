@@ -5,20 +5,21 @@
 ## in Latin-1, then you should replace the string "UTF-8" with "latin-1".  If
 ## you do this, you should also change the charset in 'Content-Type' as well.
 #encoding UTF-8
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head profile="http://www.w3.org/2005/10/profile">
+  <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="refresh" content="900">
-    <title>$station.location</title>
+    <title>$station.location Environmental Stats</title>
     <link rel="icon" type="image/png" href="../favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="../standard.css"/>
-    <script type="text/javascript" src="../standard.js"></script>
+    <link rel="stylesheet" type="text/css" href="seasons.css"/>
+    <script src="../standard.js"></script>
   </head>
 
   <body onload="setup();">
     #include "inc/titlebar.inc"
     <div id="contents">
+      <p><a href="../index.html">&#10096; Current Conditions</a></p>
       <div id="widget_group">
         #if $current.UV.raw >= 2.5
             #include "sunsmart.inc"
@@ -38,24 +39,24 @@
         #include "inc/map.inc"
         #include "inc/sqlbackup.inc"
       </div>
-
       <div id="plot_group">
         <div id="history_widget" class="widget">
           <div id="plot_title" class="widget_title">History:&nbsp;&nbsp;
             <a class="button_selected" id="button_history_day"
                onclick="choose_history('day')">Day</a>
-            <a class="button" id="button_history_week"
+            <!-- a class="button" id="button_history_week"
                onclick="choose_history('week')">Week</a>
             <a class="button" id="button_history_month"
                onclick="choose_history('month')">Month</a>
             <a class="button" id="button_history_year"
-               onclick="choose_history('year')">Year</a>
-            <a class="button" id="button_history_dayrain"
-               onclick="choose_history('dayrain')">(Day rain</a>
-            <a class="button" id="button_history_weekrain"
-               onclick="choose_history('weekrain')">Week rain)</a>
+               onclick="choose_history('year')">Year</a -->
           </div>
           <div id="history_day" class="plot_container">
+                 <!-- $uvolt -->
+                 <!-- $ucpm -->
+                 <!-- $utemp -->
+                 <!-- $rad_addr -->
+
             <img src="dayvolt.png"       alt="$obs.label.volt" />
             <img src="daycpm.png"  alt="$obs.label.barometer"/>
             <img src="daytemp.png"    alt="$obs.label.outTemp" />
