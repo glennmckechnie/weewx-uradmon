@@ -26,6 +26,7 @@
         #end if
         #include "inc/about.inc"
         #include "inc/blitzortung.inc"
+        #include "inc/uradmon.inc"
         #include "inc/current.inc"
         #include "inc/cfaforecast.inc"
         #include "inc/rainforecast.inc"
@@ -44,12 +45,12 @@
           <div id="plot_title" class="widget_title">History:&nbsp;&nbsp;
             <a class="button_selected" id="button_history_day"
                onclick="choose_history('day')">Day</a>
-            <!-- a class="button" id="button_history_week"
+            <a class="button" id="button_history_week"
                onclick="choose_history('week')">Week</a>
             <a class="button" id="button_history_month"
                onclick="choose_history('month')">Month</a>
             <a class="button" id="button_history_year"
-               onclick="choose_history('year')">Year</a -->
+               onclick="choose_history('year')">Year</a>
           </div>
           <div id="history_day" class="plot_container">
                  <!-- $uvolt -->
@@ -68,16 +69,37 @@
             <img src="daypm25.png"    alt="$obs.label.windvec" />
           </div>
           <div id="history_week" class="plot_container" style="display:none">
+            <img src="weekvolt.png"       alt="$obs.label.volt" />
+            <img src="weekcpm.png"  alt="$obs.label.barometer"/>
+            <img src="weektemp.png"    alt="$obs.label.outTemp" />
+            <img src="weekhum.png"    alt="$obs.label.outHumidity" />
+            <img src="weekpressure.png"   alt="$obs.label.barometer" />
+            <img src="weekvoc.png"        alt="$obs.label.outHumidity" />
+            <img src="weekco2.png"       alt="$obs.label.windSpeed" />
+            <img src="weekch20.png"    alt="$obs.label.windDir" />
+            <img src="weekpm25.png"    alt="$obs.label.windvec" />
           </div>
           <div id="history_month" class="plot_container" style="display:none">
-            #if $month.rxCheckPercent.has_data
-            <img src="monthrx.png"        alt="$obs.label.rxCheckPercent"/>
-            #end if
+            <img src="monthvolt.png"       alt="$obs.label.volt" />
+            <img src="monthcpm.png"  alt="$obs.label.barometer"/>
+            <img src="monthtemp.png"    alt="$obs.label.outTemp" />
+            <img src="monthhum.png"    alt="$obs.label.outHumidity" />
+            <img src="monthpressure.png"   alt="$obs.label.barometer" />
+            <img src="monthvoc.png"        alt="$obs.label.outHumidity" />
+            <img src="monthco2.png"       alt="$obs.label.windSpeed" />
+            <img src="monthch20.png"    alt="$obs.label.windDir" />
+            <img src="monthpm25.png"    alt="$obs.label.windvec" />
           </div>
           <div id="history_year" class="plot_container" style="display:none">
-            #if $year.rxCheckPercent.has_data
-            <img src="yearrx.png"         alt="$obs.label.rxCheckPercent"/>
-            #end if
+            <img src="yearvolt.png"       alt="$obs.label.volt" />
+            <img src="yearcpm.png"  alt="$obs.label.barometer"/>
+            <img src="yeartemp.png"    alt="$obs.label.outTemp" />
+            <img src="yearhum.png"    alt="$obs.label.outHumidity" />
+            <img src="yearpressure.png"   alt="$obs.label.barometer" />
+            <img src="yearvoc.png"        alt="$obs.label.outHumidity" />
+            <img src="yearco2.png"       alt="$obs.label.windSpeed" />
+            <img src="yearch20.png"    alt="$obs.label.windDir" />
+            <img src="yearpm25.png"    alt="$obs.label.windvec" />
           </div>
           <div id="history_dayrain" class="plot_container" style="display:none">
           </div>
