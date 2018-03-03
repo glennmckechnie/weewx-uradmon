@@ -56,6 +56,9 @@ schema = [
     ('uptime',   'INTEGER')
 ]
 
+global uuid
+global utype
+global udetect
 
 def get_default_binding_dict():
     return {'database': 'uradmon_sqlite',
@@ -122,44 +125,45 @@ class UradMon(weewx.engine.StdService):
         url = "http://" + self.rad_addr + "/j"
 
         #stackoverflow.com/questions/9446387/how-to-retry-urllib2-request-when-fails
-        ntries = 5
+        ntries = 1
         assert ntries >= 1
         for _ in range(ntries):
+            loginf("uradmon: starting attempt number %s to monitor" %_)
             try:
-                loginf("uradmon:  _response on ntries = %s " %_)
                 _response = urllib2.urlopen(url, timeout=3)
                 break # success
             except Exception as err:
-                loginf("uradmon:  timeout raised: %s : ntries %s" %(err, _))
+                loginf("uradmon: error raised: %s @ retry %s to monitor" %(err, _))
+                ntries = None
         else: # all ntries failed
-            loginf("uradmon:  err raised: %s after %s ntries" %(err, _))
-            raise err # re-raise the last timeout error
+            loginf("uradmon: No data fetched, %s after %s retries to monitor" %(err, _))
+            ntries = None
+        if ntries is not None:
+            loginf("uradmon: monitor responsed on try number %s " %_)
+            json_string = json.loads(_response.read().decode('utf-8'))
 
-        json_string = json.loads(_response.read().decode('utf-8'))
-        #loginf(" json_string is %s" % json_string)
+            self.uuid = json_string["data"]["id"]
+            self.utype = json_string["data"]["type"]
+            self.udetect = json_string["data"]["detector"]
 
-        self.uuid = json_string["data"]["id"]
-        self.utype = json_string["data"]["type"]
-        self.udetect = json_string["data"]["detector"]
+            timestamp = int(time.time());
+            int_one = 1
 
-        timestamp = int(time.time());
-        int_one = 1
+            rec = {'dateTime': timestamp,
+                   'usUnits': weewx.METRIC,
+                   'interval': int_one,
+                   'uvolt': json_string["data"]["voltage"],
+                   'ucpm': json_string["data"]["cpm"],
+                   'utemp': json_string["data"]["temperature"],
+                   'uhum': json_string["data"]["humidity"],
+                   'upres': json_string["data"]["pressure"],
+                   'uvoc': json_string["data"]["voc"],
+                   'uco2': json_string["data"]["co2"],
+                   'uch2o': json_string["data"]["ch2o"],
+                   'upm25': json_string["data"]["pm25"],
+                   'uptime': json_string["data"]["uptime"]}
+            loginf(" rec is %s" % rec)
 
-        rec = {'dateTime': timestamp,
-               'usUnits': weewx.METRIC,
-               'interval': int_one,
-               'uvolt': json_string["data"]["voltage"],
-               'ucpm': json_string["data"]["cpm"],
-               'utemp': json_string["data"]["temperature"],
-               'uhum': json_string["data"]["humidity"],
-               'upres': json_string["data"]["pressure"],
-               'uvoc': json_string["data"]["voc"],
-               'uco2': json_string["data"]["co2"],
-               'uch2o': json_string["data"]["ch2o"],
-               'upm25': json_string["data"]["pm25"],
-               'uptime': json_string["data"]["uptime"]}
-        loginf(" rec is %s" % rec)
-
-        dbm_dict = weewx.manager.get_manager_dict(self.config_dict['DataBindings'], self.config_dict['Databases'],self.data_binding,default_binding_dict=get_default_binding_dict())
-        with weewx.manager.open_manager(dbm_dict) as dbm:
-            dbm.addRecord(rec)
+            dbm_dict = weewx.manager.get_manager_dict(self.config_dict['DataBindings'], self.config_dict['Databases'],self.data_binding,default_binding_dict=get_default_binding_dict())
+            with weewx.manager.open_manager(dbm_dict) as dbm:
+                dbm.addRecord(rec)
