@@ -26,7 +26,7 @@ import weeutil.weeutil
 import weedb
 from weewx.cheetahgenerator import SearchList
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'uradmon: %s' % msg)
@@ -81,6 +81,7 @@ class UradMonSkin(SearchList):
 class UradMon(weewx.engine.StdService):
     def __init__(self, engine,config_dict):
         super(UradMon, self).__init__(engine, config_dict)
+        loginf('version is %s' % VERSION)
         self.d_binding = '1'
         d = config_dict.get('UradMon', {})
         #f = config_dict.get('DataBindings'),('uradmon_binding', {})
@@ -122,20 +123,22 @@ class UradMon(weewx.engine.StdService):
         u'temperature': 23.07}}
         """
         self.rad_addr = '192.168.0.235'
+        #self.rad_addr = '192.168.0.35' # no route to host
 
         url = "http://" + self.rad_addr + "/j"
 
         #stackoverflow.com/questions/9446387/how-to-retry-urllib2-request-when-fails
-        attempts = 2
+        attempts = 5
         assert attempts >= 1
         for _ in range(attempts):
             loginf("connection attempt %s to %s" %(_, self.rad_addr))
             try:
+                time.sleep(_)
                 _response = urllib2.urlopen(url, timeout=3)
                 break # success
             except Exception as err:
-                loginf("%s error on attempt %s to %s" %(err, _, self.rad_addr))
-                attempts = None
+                loginf("error (%s) on attempt %s to %s" %(err, _, self.rad_addr))
+                #attempts = None
         else: # all attempts failed
             loginf("No data fetched, %s after %s attempts to %s" %(err, _, self.rad_addr))
             attempts = None

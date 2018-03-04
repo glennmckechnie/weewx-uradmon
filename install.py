@@ -38,7 +38,8 @@ class uradmonInstaller(ExtensionInstaller):
                         'HTML_ROOT': 'uradmon'
                         }}},
             files=[('bin/user',
-                   ['bin/user/uradmon.py']),
+                   ['bin/user/uradmon.py',
+                    'bin/user/extensions-urad.py']),
                    ('skins/uradmon',
                    ['skins/uradmon/skin.conf',
                     'skins/uradmon/index.html.tmpl',
