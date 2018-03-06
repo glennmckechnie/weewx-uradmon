@@ -10,14 +10,8 @@
 #
 
 import json
-import datetime
 import time
-import mysql.connector
-import sys
-from array import array
 import urllib2
-import socket
-
 import syslog
 
 import weewx
@@ -26,7 +20,39 @@ import weeutil.weeutil
 import weedb
 from weewx.cheetahgenerator import SearchList
 
-VERSION = "0.1.1"
+
+# add the required units
+weewx.units.obs_group_dict['uvolt'] = 'group_volt'
+weewx.units.obs_group_dict['ucpm'] = 'group_sievert'
+weewx.units.obs_group_dict['uvoc'] = 'group_ppm'
+weewx.units.obs_group_dict['uco2'] = 'group_ppm'
+weewx.units.obs_group_dict['uch2o'] = 'group_ppm'
+weewx.units.obs_group_dict['upm25'] = 'group_mgram'
+weewx.units.obs_group_dict['uptime'] = 'group_elapsed'
+weewx.units.obs_group_dict['upres'] = 'group_pressure'
+weewx.units.obs_group_dict['utemp'] = 'group_temperature'
+weewx.units.obs_group_dict['uhum'] = 'group_percent'
+
+# USUnits would be ????
+weewx.units.USUnits['group_sievert'] = 'microsievert'
+weewx.units.USUnits['group_ppm'] = 'ppm'
+weewx.units.USUnits['group_mgram'] = 'microgram'
+weewx.units.MetricUnits['group_sievert'] = 'microsievert'
+weewx.units.MetricUnits['group_ppm'] = 'ppm'
+weewx.units.MetricUnits['group_mgram'] = 'microgram'
+weewx.units.MetricWXUnits['group_sievert'] = 'microsievert'
+weewx.units.MetricWXUnits['group_ppm'] = 'ppm'
+weewx.units.MetricWXUnits['group_mgram'] = 'microgram'
+
+weewx.units.default_unit_format_dict['microsievert'] = '%.0f'
+weewx.units.default_unit_format_dict['ppm'] = '%.1f'
+weewx.units.default_unit_format_dict['microgram'] = '%.0f'
+
+weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
+weewx.units.default_unit_label_dict['ppm'] = ' ppm'
+weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
+
+VERSION = "0.1.2"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'uradmon: %s' % msg)
@@ -42,23 +68,19 @@ def logerr(msg):
 
 schema = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
-    ('usUnits',  'INTEGER NOT NULL'),
+    ('usUnits', 'INTEGER NOT NULL'),
     ('interval', 'INTEGER NOT NULL'),
-    ('uvolt',    'INTEGER'),
-    ('ucpm',     'REAL'),
-    ('utemp',    'REAL'),
-    ('uhum',     'REAL'),
-    ('upres',    'INTEGER'),
-    ('uvoc',     'INTEGER'),
-    ('uco2' ,    'INTEGER'),
-    ('uch2o',    'REAL'),
-    ('upm25',    'INTEGER'),
-    ('uptime',   'INTEGER')
+    ('uvolt', 'INTEGER'),
+    ('ucpm', 'REAL'),
+    ('utemp', 'REAL'),
+    ('uhum', 'REAL'),
+    ('upres', 'INTEGER'),
+    ('uvoc', 'INTEGER'),
+    ('uco2', 'INTEGER'),
+    ('uch2o', 'REAL'),
+    ('upm25', 'INTEGER'),
+    ('uptime', 'INTEGER')
 ]
-
-global uuid
-global utype
-global udetect
 
 def get_default_binding_dict():
     return {'database': 'uradmon_sqlite',
@@ -70,24 +92,18 @@ def get_default_binding_dict():
 class UradMonSkin(SearchList):
     def __init__(self, generator):
         SearchList.__init__(self, generator)
-
-        rad_addr = self.generator.skin_dict['device'].get('uradmon_address','')
-        self.rad_addr = self.generator.skin_dict['device'].get('uradmon_address','')
-        self.sql_host = self.generator.skin_dict['mysql'].get('dbhost','')
-        self.sql_db = self.generator.skin_dict['mysql'].get('db','')
-        self.sql_user = self.generator.skin_dict['mysql'].get('dbuser','')
-        self.sql_user_pwd = self.generator.skin_dict['mysql'].get('dbpwd','')
+        return
 
 class UradMon(weewx.engine.StdService):
-    def __init__(self, engine,config_dict):
+    def __init__(self, engine, config_dict):
         super(UradMon, self).__init__(engine, config_dict)
         loginf('version is %s' % VERSION)
         self.d_binding = '1'
         d = config_dict.get('UradMon', {})
-        #f = config_dict.get('DataBindings'),('uradmon_binding', {})
 
         self.binding = d.get('binding', 'archive')
         self.data_binding = d.get('data_binding', 'uradmon_binding')
+        self.rad_addr = d.get('uradmon_address', '')
 
         if self.data_binding is not None:
             dbm_dict = weewx.manager.get_manager_dict(config_dict['DataBindings'], config_dict['Databases'],self.data_binding, default_binding_dict=get_default_binding_dict())
@@ -97,12 +113,19 @@ class UradMon(weewx.engine.StdService):
             memcol = [x[0] for x in dbm_dict['schema']]
             if dbcol != memcol:
                 raise Exception('schema mismatch: %s != %s' %
-                                    (dbcol, memcol))
+                                (dbcol, memcol))
 
+        #loginf("rad_address is :%s:" % self.rad_addr)
         if self.binding == 'archive':
-            self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
+            if self.rad_addr != '':
+                self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
+            else:
+                loginf("No uRADMonitor address specified, skipping service")
         else:
-            self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
+            if self.rad_addr != '':
+                self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
+            else:
+                loginf("No uRADMonitor address specified, skipping service")
 
     def handle_new_archive(self, event):
         """save data to database"""
@@ -122,35 +145,33 @@ class UradMon(weewx.engine.StdService):
         u'detector': u'SI29BG', u'type': u'8', u'id': u'82000079', u'pm25': 4,
         u'temperature': 23.07}}
         """
-        self.rad_addr = '192.168.0.235'
-        #self.rad_addr = '192.168.0.35' # no route to host
 
         url = "http://" + self.rad_addr + "/j"
 
         #stackoverflow.com/questions/9446387/how-to-retry-urllib2-request-when-fails
-        attempts = 5
+        attempts = 3
         assert attempts >= 1
         for _ in range(attempts):
-            loginf("connection attempt %s to %s" %(_, self.rad_addr))
+            logdbg("connection attempt %s to %s" %(int(_+1), self.rad_addr))
             try:
                 time.sleep(_)
                 _response = urllib2.urlopen(url, timeout=3)
                 break # success
             except Exception as err:
-                loginf("error (%s) on attempt %s to %s" %(err, _, self.rad_addr))
-                #attempts = None
+                logdbg("error (%s) on attempt %s to %s" %(err, int(_+1), self.rad_addr))
         else: # all attempts failed
-            loginf("No data fetched, %s after %s attempts to %s" %(err, _, self.rad_addr))
+            logerr("No data fetched, %s after %s attempts to %s" %(err, int(_+1), self.rad_addr))
             attempts = None
         if attempts is not None:
-            loginf("%s responded on attempt %s" %(self.rad_addr,_))
+            logdbg("%s responded on attempt %s" %(self.rad_addr, int(_+1)))
             json_string = json.loads(_response.read().decode('utf-8'))
 
-            self.uuid = json_string["data"]["id"]
-            self.utype = json_string["data"]["type"]
-            self.udetect = json_string["data"]["detector"]
+            # unused
+            #self.uuid = json_string["data"]["id"]
+            #self.utype = json_string["data"]["type"]
+            #self.udetect = json_string["data"]["detector"]
 
-            timestamp = int(time.time());
+            timestamp = int(time.time())
             int_one = 1
 
             rec = {'dateTime': timestamp,
@@ -166,7 +187,7 @@ class UradMon(weewx.engine.StdService):
                    'uch2o': json_string["data"]["ch2o"],
                    'upm25': json_string["data"]["pm25"],
                    'uptime': json_string["data"]["uptime"]}
-            loginf(" rec is %s" % rec)
+            logdbg(" rec is %s" % rec)
 
             dbm_dict = weewx.manager.get_manager_dict(self.config_dict['DataBindings'], self.config_dict['Databases'],self.data_binding,default_binding_dict=get_default_binding_dict())
             with weewx.manager.open_manager(dbm_dict) as dbm:
