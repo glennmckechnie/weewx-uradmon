@@ -41,7 +41,7 @@
     &nbsp;<img src="images/urad-favicon.ico" width="16" height="16" alt="">
     </td>
     <td>
-    Local - <a href="index.html"> uRADMonitor</a>
+    Local - <a href="index.html" target="_blank"> uRADMonitor</a>
    </tr>
 
    <tr><td  colspan='2'><i>Stats from uRADMonitor site</i></td></tr>
