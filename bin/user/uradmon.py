@@ -93,7 +93,7 @@ class UradMonSkin(SearchList):
                     ('unit_id', 'xxXxXxXx')
         self.unit_model = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_model', 'uRADMonitor')
-        self.model_link = self.generator.skin_dict['Uradmonitor'].get \
+        self.unit_link = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_link', '\"https://www.uradmonitor.com/products/\"')
         return
 

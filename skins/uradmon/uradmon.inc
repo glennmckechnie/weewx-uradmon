@@ -26,7 +26,7 @@
    <div id="uradmon_details">
    <p>
    Environmental stats as provided by<br>
-   an <a href="$unit_link">$unit_model</a> from uRADMonitor.
+   an <a href="$unit_link" target="_blank">$unit_model</a> from uRADMonitor.
    </p><p class="footnote">
    <i>"Gamma radiation, formaldehyde, CO2,<br>
    tVOC Air quality +temperature,<br>
