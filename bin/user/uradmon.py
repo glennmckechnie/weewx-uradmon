@@ -1,10 +1,11 @@
 #
-#    Copyright (c) 2017 Glenn McKechnie glenn.mckechnie@gmail.com>
-#    Credit to Tom Keffer <tkeffer@gmail.com>, Matthew Wall and the core
-#    based on the csv, pmon and cmon extensions by mwall
-#    Copyright 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
+#   Copyright (c) 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
+#   Credit to Tom Keffer <tkeffer@gmail.com>, Matthew Wall and the core
+#   weewx team, whom I've borrowed ideas and code from.
+#   This code is based on the csv, pmon and cmon extensions by mwall
+#   Copyright 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
 #
-#    Mistakes are mine, corrections and or improvements welcomed
+#   Mistakes are mine, corrections and or improvements welcomed
 #      https://github.com/glennmckechnie/weewx-uradmon
 #
 #
@@ -95,7 +96,7 @@ class UradMonSkin(SearchList):
 class UradMon(weewx.engine.StdService):
     def __init__(self, engine, config_dict):
         super(UradMon, self).__init__(engine, config_dict)
-        loginf('version is %s' % urad_version)
+        loginf('service version is %s' % urad_version)
         udict = config_dict.get('UradMon', {})
 
         self.udebug = to_bool(udict.get('urad_debug', False))
@@ -129,7 +130,6 @@ class UradMon(weewx.engine.StdService):
         return
 
     def readdata(self):
-        #loginf (" result is ?? %s" % result)
         """
          As the browser returns it...
         {"data":{ "id":"82000079","type":"8","detector":"SI29BG","voltage":384,
@@ -145,14 +145,20 @@ class UradMon(weewx.engine.StdService):
 
         url = "http://" + self.rad_addr + "/j"
 
-        attempts = 3
+        # I seemed to get a lot of timeouts, possibly because a cron job and
+        # this were hitting the uradmonitor every minute. A note exists that the
+        # monitor is sensitive to DDOS attacks and shuts down when that occurs?
+        # It wasn't shutting down for me, but it was slowing down, possibly
+        # getting close to it? All seems fine with this code, and even better
+        # with the cronjob cancelled (it's now redundant anyway)
+        attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
             if self.udebug:
                 loginf("connection attempt %s to %s" %(int(_+1), self.rad_addr))
             try:
                 time.sleep(_) # crude backoff
-                _response = urllib2.urlopen(url, timeout=3)
+                _response = urllib2.urlopen(url, timeout=3) # local network = quick response.
                 break # on success
             except Exception as err:
                 if self.udebug:
@@ -164,12 +170,12 @@ class UradMon(weewx.engine.StdService):
         if attempts is not None:
             if self.udebug:
                 loginf("%s responded on attempt %s" %(self.rad_addr, int(_+1)))
-            json_string = json.loads(_response.read().decode('utf-8'))
+            self.json_string = json.loads(_response.read().decode('utf-8'))
 
-            # unused
-            #self.uuid = json_string["data"]["id"]
-            #self.utype = json_string["data"]["type"]
-            #self.udetect = json_string["data"]["detector"]
+            # from the A3 - unused values
+            #self.uuid = self.json_string["data"]["id"]
+            #self.utype = self.json_string["data"]["type"]
+            #self.udetect = self.json_string["data"]["detector"]
 
             timestamp = int(time.time())
             int_one = 1
@@ -177,16 +183,16 @@ class UradMon(weewx.engine.StdService):
             rec = {'dateTime': timestamp,
                    'usUnits': weewx.METRIC,
                    'interval': int_one,
-                   'uvolt': json_string["data"]["voltage"],
-                   'ucpm': json_string["data"]["cpm"],
-                   'utemp': json_string["data"]["temperature"],
-                   'uhum': json_string["data"]["humidity"],
-                   'upres': json_string["data"]["pressure"],
-                   'uvoc': json_string["data"]["voc"],
-                   'uco2': json_string["data"]["co2"],
-                   'uch2o': json_string["data"]["ch2o"],
-                   'upm25': json_string["data"]["pm25"],
-                   'uptime': json_string["data"]["uptime"]}
+                   'uvolt': self.json_string["data"]["voltage"],
+                   'ucpm': self.json_string["data"]["cpm"],
+                   'utemp': self.json_string["data"]["temperature"],
+                   'uhum': self.json_string["data"]["humidity"],
+                   'upres': self.json_string["data"]["pressure"],
+                   'uvoc': self.json_string["data"]["voc"],
+                   'uco2': self.json_string["data"]["co2"],
+                   'uch2o': self.json_string["data"]["ch2o"],
+                   'upm25': self.json_string["data"]["pm25"],
+                   'uptime': self.json_string["data"]["uptime"]}
             if self.udebug:
                 loginf(" record is %s" % rec)
 
