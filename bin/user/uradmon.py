@@ -86,6 +86,10 @@ schema = [
 class UradMonSkin(SearchList):
     def __init__(self, generator):
         SearchList.__init__(self, generator)
+
+        self.uradmon_version = urad_version
+        self.unit_id = self.generator.skin_dict['Uradmonitor'].get \
+                    ('unit_id', 'xxXxXxXx')
         return
 
 class UradMon(weewx.engine.StdService):

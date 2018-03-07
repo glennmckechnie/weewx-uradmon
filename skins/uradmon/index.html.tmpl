@@ -6,10 +6,10 @@
 ## you do this, you should also change the charset in 'Content-Type' as well.
 #encoding UTF-8
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="refresh" content="900">
+    <!-- meta http-equiv="refresh" content="900" -->
     <title>$station.location Environmental Stats</title>
     <link rel="icon" type="image/png" href="../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="seasons.css"/>
@@ -17,32 +17,35 @@
   </head>
 
   <body onload="setup();">
-    #include "inc/titlebar.inc"
+      <div id="title_bar">
+       <div id="title">
+        <h1 class="page_title">$station.location</h1>
+        <p class="lastupdate">$current.dateTime</p>
+       </div>
+      </div>
     <div id="contents">
       <p><a href="../index.html">&#10096; Current Conditions</a></p>
       <div id="widget_group">
         #if $current.UV.raw >= 2.5
             #include "sunsmart.inc"
         #end if
-        #include "inc/about.inc"
-        #include "inc/blitzortung.inc"
-        #include "inc/uradmon.inc"
-        #include "inc/current.inc"
-        #include "inc/cfaforecast.inc"
-        #include "inc/rainforecast.inc"
-        #include "inc/linkswxobs.inc"
-        #include "inc/links.inc"
-        #include "inc/radar.inc"
-        #include "inc/satellite.inc"
-        #include "inc/sunmoon.inc"
-        #include "inc/sensors.inc"
-        #include "inc/hilo.inc"
-        #include "inc/map.inc"
-        #include "inc/sqlbackup.inc"
+        #include "about.inc"
+        #include "blitzortung.inc"
+        #include "uradmon.inc"
+        #include "current.inc"
+        #include "cfaforecast.inc"
+        #include "rainforecast.inc"
+        #include "linkswxobs.inc"
+        #include "links.inc"
+        #include "radar.inc"
+        #include "satellite.inc"
+        #include "sunmoon.inc"
+        #include "sensors.inc"
+        #include "hilo.inc"
       </div>
       <div id="plot_group">
         <div id="history_widget" class="widget">
-          <div id="plot_title" class="widget_title">History:&nbsp;&nbsp;
+          <div id="plot_title" class="widget_title">uRADMonitor:&nbsp;&nbsp;Environmental&nbsp;&nbsp;(Air quality)&nbsp;&nbsp;history&nbsp;&nbsp;by&nbsp;&nbsp;
             <a class="button_selected" id="button_history_day"
                onclick="choose_history('day')">Day</a>
             <a class="button" id="button_history_week"
@@ -58,48 +61,52 @@
                  <!-- $utemp -->
                  <!-- $rad_addr -->
 
-            <img src="dayvolt.png"       alt="$obs.label.volt" />
-            <img src="daycpm.png"  alt="$obs.label.barometer"/>
-            <img src="daytemp.png"    alt="$obs.label.outTemp" />
-            <img src="dayhum.png"    alt="$obs.label.outHumidity" />
-            <img src="daypressure.png"   alt="$obs.label.barometer" />
-            <img src="dayvoc.png"        alt="$obs.label.outHumidity" />
-            <img src="dayco2.png"       alt="$obs.label.windSpeed" />
-            <img src="daych20.png"    alt="$obs.label.windDir" />
-            <img src="daypm25.png"    alt="$obs.label.windvec" />
+            <img src="daycpm.png"  alt="Radiation dosage level"/>
+            <img src="dayvoc.png"        alt="Volatile organic compounds" />
+            <img src="dayco2.png"       alt="Carbon dioxide levels" />
+            <img src="daych20.png"    alt="Formaldehyde Levels" />
+            <img src="daypm25.png"    alt="2.5 particulates" />
+            <img src="dayuptime.png"    alt="uRADMonitor uptime" />
+            <img src="dayvolt.png"       alt="uRADMonitor voltage" />
+            <img src="daytemp.png"    alt="uRADMonitor temperature" />
+            <img src="dayhum.png"    alt="uRADMonitor humidity" />
+            <img src="daypressure.png"   alt="uRADMonitor pressure" />
           </div>
           <div id="history_week" class="plot_container" style="display:none">
-            <img src="weekvolt.png"       alt="$obs.label.volt" />
-            <img src="weekcpm.png"  alt="$obs.label.barometer"/>
-            <img src="weektemp.png"    alt="$obs.label.outTemp" />
-            <img src="weekhum.png"    alt="$obs.label.outHumidity" />
-            <img src="weekpressure.png"   alt="$obs.label.barometer" />
-            <img src="weekvoc.png"        alt="$obs.label.outHumidity" />
-            <img src="weekco2.png"       alt="$obs.label.windSpeed" />
-            <img src="weekch20.png"    alt="$obs.label.windDir" />
-            <img src="weekpm25.png"    alt="$obs.label.windvec" />
+            <img src="weekcpm.png"  alt="Radiation dosage level"/>
+            <img src="weekvoc.png"        alt="Volatile organic compounds" />
+            <img src="weekco2.png"       alt="Carbon dioxide levels" />
+            <img src="weekch20.png"    alt="Formaldehyde Levels" />
+            <img src="weekpm25.png"    alt="2.5 particulates" />
+            <img src="weekuptime.png"    alt="uRADMonitor uptime" />
+            <img src="weekvolt.png"       alt="uRADMonitor voltage" />
+            <img src="weektemp.png"    alt="uRADMonitor temperature" />
+            <img src="weekhum.png"    alt="uRADMonitor humidity" />
+            <img src="weekpressure.png"   alt="uRADMonitor pressure" />
           </div>
           <div id="history_month" class="plot_container" style="display:none">
-            <img src="monthvolt.png"       alt="$obs.label.volt" />
-            <img src="monthcpm.png"  alt="$obs.label.barometer"/>
-            <img src="monthtemp.png"    alt="$obs.label.outTemp" />
-            <img src="monthhum.png"    alt="$obs.label.outHumidity" />
-            <img src="monthpressure.png"   alt="$obs.label.barometer" />
-            <img src="monthvoc.png"        alt="$obs.label.outHumidity" />
-            <img src="monthco2.png"       alt="$obs.label.windSpeed" />
-            <img src="monthch20.png"    alt="$obs.label.windDir" />
-            <img src="monthpm25.png"    alt="$obs.label.windvec" />
+            <img src="monthcpm.png"  alt="Radiation dosage level"/>
+            <img src="monthvoc.png"        alt="Volatile organic compounds" />
+            <img src="monthco2.png"       alt="Carbon dioxide levels" />
+            <img src="monthch20.png"    alt="Formaldehyde Levels" />
+            <img src="monthpm25.png"    alt="2.5 particulates" />
+            <img src="monthuptime.png"    alt="uRADMonitor uptime" />
+            <img src="monthvolt.png"       alt="uRADMonitor voltage" />
+            <img src="monthtemp.png"    alt="uRADMonitor temperature" />
+            <img src="monthhum.png"    alt="uRADMonitor humidity" />
+            <img src="monthpressure.png"   alt="uRADMonitor pressure" />
           </div>
           <div id="history_year" class="plot_container" style="display:none">
-            <img src="yearvolt.png"       alt="$obs.label.volt" />
-            <img src="yearcpm.png"  alt="$obs.label.barometer"/>
-            <img src="yeartemp.png"    alt="$obs.label.outTemp" />
-            <img src="yearhum.png"    alt="$obs.label.outHumidity" />
-            <img src="yearpressure.png"   alt="$obs.label.barometer" />
-            <img src="yearvoc.png"        alt="$obs.label.outHumidity" />
-            <img src="yearco2.png"       alt="$obs.label.windSpeed" />
-            <img src="yearch20.png"    alt="$obs.label.windDir" />
-            <img src="yearpm25.png"    alt="$obs.label.windvec" />
+            <img src="yearcpm.png"  alt="Radiation dosage level"/>
+            <img src="yearvoc.png"        alt="Volatile organic compounds" />
+            <img src="yearco2.png"       alt="Carbon dioxide levels" />
+            <img src="yearch20.png"    alt="Formaldehyde Levels" />
+            <img src="yearpm25.png"    alt="2.5 particulates" />
+            <img src="yearuptime.png"    alt="uRADMonitor uptime" />
+            <img src="yearvolt.png"       alt="uRADMonitor voltage" />
+            <img src="yeartemp.png"    alt="uRADMonitor temperature" />
+            <img src="yearhum.png"    alt="uRADMonitor humidity" />
+            <img src="yearpressure.png"   alt="uRADMonitor pressure" />
           </div>
           <div id="history_dayrain" class="plot_container" style="display:none">
           </div>
@@ -110,19 +117,11 @@
     </div>
 
     <p class="footnote">
-      This station uses an $station.hardware to collect data from various one-wire sensors 
-      that are connected to a <a href="https://www.raspberrypi.org/help/faqs/">raspberry Pi 2</a> 
-      micro computer.<br>
-      This data is then collected and displayed by <a href="http://weewx.com/">weeWX</a>, an
-      experimental weather software system written in Python.<br>
-      This raspberry pi runs with <a href="https://github.com/glennmckechnie/rorpi-raspberrypi"> a read only filesystem</a>
-    </p>
-    <p class="footnote">
-     Radar, satellite, and rain images are courtesy of the Australian Government Bureau of Meteorology, 2017.<br>
-     Fire rating image is courtesy of CFA Victoria, 2017
+         This weewx extension is available at github as <a href="https://github.com/glennmckechnie/weewx-uradmon">weewx-uradmon</a> : This is version $uradmon_version<br>
+
     </p>
 
-    #include "inc/analytics.inc"
+    #include "analytics.inc"
 
 </body>
 
