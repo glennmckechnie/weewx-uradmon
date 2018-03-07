@@ -26,23 +26,8 @@
     <div id="contents">
       <p><a href="../index.html">&#10096; Current Conditions</a></p>
       <div id="widget_group">
-        #if $current.UV.raw >= 2.5
-            #include "sunsmart.inc"
-        #end if
         #include "about.inc"
-        #include "blitzortung.inc"
         #include "uradmon.inc"
-        #include "current.inc"
-        #include "cfaforecast.inc"
-        #include "rainforecast.inc"
-        #include "linkswxobs.inc"
-        #include "links.inc"
-        #include "radar.inc"
-        #include "satellite.inc"
-        #include "sunmoon.inc"
-        #include "sensors.inc"
-        #include "hilo.inc"
-      </div>
       <div id="plot_group">
         <div id="history_widget" class="widget">
           <div id="plot_title" class="widget_title">uRADMonitor:&nbsp;&nbsp;Environmental&nbsp;&nbsp;(Air quality)&nbsp;&nbsp;history&nbsp;&nbsp;by&nbsp;&nbsp;
@@ -56,11 +41,6 @@
                onclick="choose_history('year')">Year</a>
           </div>
           <div id="history_day" class="plot_container">
-                 <!-- $uvolt -->
-                 <!-- $ucpm -->
-                 <!-- $utemp -->
-                 <!-- $rad_addr -->
-
             <img src="daycpm.png"  alt="Radiation dosage level"/>
             <img src="dayvoc.png"        alt="Volatile organic compounds" />
             <img src="dayco2.png"       alt="Carbon dioxide levels" />
@@ -118,10 +98,7 @@
 
     <p class="footnote">
          This weewx extension is available at github as <a href="https://github.com/glennmckechnie/weewx-uradmon">weewx-uradmon</a> : This is version $uradmon_version<br>
-
     </p>
-
-    #include "analytics.inc"
 
 </body>
 
