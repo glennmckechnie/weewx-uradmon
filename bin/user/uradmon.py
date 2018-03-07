@@ -91,6 +91,10 @@ class UradMonSkin(SearchList):
         self.uradmon_version = urad_version
         self.unit_id = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_id', 'xxXxXxXx')
+        self.unit_model = self.generator.skin_dict['Uradmonitor'].get \
+                    ('unit_model', 'uRADMonitor')
+        self.model_link = self.generator.skin_dict['Uradmonitor'].get \
+                    ('unit_link', '\"https://www.uradmonitor.com/products/\"')
         return
 
 class UradMon(weewx.engine.StdService):

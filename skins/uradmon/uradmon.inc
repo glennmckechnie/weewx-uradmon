@@ -17,16 +17,16 @@
 <div id='uradmon_widget' class="widget">
   <div class="widget_title">
    <a class="widget_control_left"
-        onclick="toggle_widget('uradmon')">Air Quality (uRADMonitor)</a>
-        &nbsp;
-   <a class="widget_control"
-     onclick="toggle_widget('uradmon')">&diams;</a>
+      onclick="toggle_widget('uradmon')">&diams;&nbsp;Air Quality (uRADMonitor)</a>
+    &nbsp;
+    <a class="widget_control"
+      onclick="toggle_widget('uradmon')">&diams;</a>
   </div>
   <div class="widget_contents">
    <div id="uradmon_details">
    <p>
    Environmental stats as provided by<br>
-   an <a href="https://www.uradmonitor.com/products/?sel=4">A3 monitor</a> from uRADMonitor.
+   an <a href="$unit_link">$unit_model</a> from uRADMonitor.
    </p><p class="footnote">
    <i>"Gamma radiation, formaldehyde, CO2,<br>
    tVOC Air quality +temperature,<br>
@@ -62,7 +62,7 @@
      <a href="https://uradmonitor.com/tools/dashboard-04/?open=$unit_id" target="_blank">uRAD Graphs</a>
     </td>
    </tr>
-   
+
    </table>
    </div>
   </div>

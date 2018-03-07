@@ -47,6 +47,7 @@ class UradmonInstaller(ExtensionInstaller):
                      'skins/uradmon/about.inc',
                      'skins/uradmon/uradmon.inc',
                      'skins/uradmon/seasons.css',
+                     'skins/uradmon/standard.js',
                     ]),
                    ('skins/uradmon/font',
                     ['skins/uradmon/font/OpenSans.woff',

@@ -6,8 +6,8 @@
 <div id='about_widget' class="widget">
   <div class="widget_title">
     <a class="widget_control_left"
-      onclick="toggle_widget('about')">&diams;</a>
-    <a href="about.html">About this weather station</a>
+      onclick="toggle_widget('about')">&diams;&nbsp;About this weather station</a>
+        &nbsp;
     <a class="widget_control"
       onclick="toggle_widget('about')">&diams;</a>
   </div>
