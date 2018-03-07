@@ -54,7 +54,7 @@ weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
 weewx.units.default_unit_label_dict['ppm'] = ' ppm'
 weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
 
-urad_version = "0.1.2"
+urad_version = "0.1.0"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'uradmon: %s' % msg)
