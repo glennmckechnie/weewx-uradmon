@@ -17,6 +17,7 @@ import syslog
 import weewx
 import weewx.engine
 import weeutil.weeutil
+from weeutil.weeutil import to_bool
 import weedb
 from weewx.cheetahgenerator import SearchList
 
@@ -52,7 +53,7 @@ weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
 weewx.units.default_unit_label_dict['ppm'] = ' ppm'
 weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
 
-VERSION = "0.1.2"
+urad_version = "0.1.2"
 
 def logmsg(level, msg):
     syslog.syslog(level, 'uradmon: %s' % msg)
@@ -90,9 +91,10 @@ class UradMonSkin(SearchList):
 class UradMon(weewx.engine.StdService):
     def __init__(self, engine, config_dict):
         super(UradMon, self).__init__(engine, config_dict)
-        loginf('version is %s' % VERSION)
+        loginf('version is %s' % urad_version)
         udict = config_dict.get('UradMon', {})
 
+        self.udebug = to_bool(udict.get('urad_debug', False))
         self.rad_addr = udict.get('uradmon_address', '')
         self.binding = udict.get('binding', 'archive')
         self.data_binding = udict.get('data_binding', 'uradmon_binding')
@@ -108,7 +110,7 @@ class UradMon(weewx.engine.StdService):
             raise Exception('schema mismatch: %s != %s' %
                             (dbcol, memcol))
 
-        #loginf("rad_address is :%s:" % self.rad_addr)
+        loginf("uRADMonitor address is %s" % self.rad_addr)
         if self.rad_addr != '':
             if self.binding == 'archive':
                 self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
@@ -119,10 +121,11 @@ class UradMon(weewx.engine.StdService):
 
     def handle_new_archive(self, event):
         """save data to database"""
-        self.readdata(event.record)
+        self.readdata()
         return
 
-    def readdata(self, result):
+    def readdata(self):
+        #loginf (" result is ?? %s" % result)
         """
          As the browser returns it...
         {"data":{ "id":"82000079","type":"8","detector":"SI29BG","voltage":384,
@@ -141,19 +144,22 @@ class UradMon(weewx.engine.StdService):
         attempts = 3
         assert attempts >= 1
         for _ in range(attempts):
-            logdbg("connection attempt %s to %s" %(int(_+1), self.rad_addr))
+            if self.udebug:
+                loginf("connection attempt %s to %s" %(int(_+1), self.rad_addr))
             try:
                 time.sleep(_) # crude backoff
                 _response = urllib2.urlopen(url, timeout=3)
                 break # on success
             except Exception as err:
-                logdbg("error (%s) on attempt %s to %s" %(err, int(_+1), self.rad_addr))
+                if self.udebug:
+                    loginf("error (%s) on attempt %s to %s" %(err, int(_+1), self.rad_addr))
         else: # all attempts failed
             logerr("No data fetched, %s after %s attempts to %s" %(err, int(_+1), self.rad_addr))
             attempts = None
 
         if attempts is not None:
-            logdbg("%s responded on attempt %s" %(self.rad_addr, int(_+1)))
+            if self.udebug:
+                loginf("%s responded on attempt %s" %(self.rad_addr, int(_+1)))
             json_string = json.loads(_response.read().decode('utf-8'))
 
             # unused
@@ -177,6 +183,7 @@ class UradMon(weewx.engine.StdService):
                    'uch2o': json_string["data"]["ch2o"],
                    'upm25': json_string["data"]["pm25"],
                    'uptime': json_string["data"]["uptime"]}
-            logdbg(" rec is %s" % rec)
+            if self.udebug:
+                loginf(" record is %s" % rec)
 
             self.dbm.addRecord(rec)
