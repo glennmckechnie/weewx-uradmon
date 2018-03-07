@@ -22,8 +22,8 @@ class UradmonInstaller(ExtensionInstaller):
             config={
                 'UradMon': {
                     'data_binding': 'uradmon_binding',
-                    'uradmon_address': '',
-                    '#urad_debug': 'True'},
+                    'urad_debug': 'True',
+                    'uradmon_address': '192.168.0.235'},
                 'DataBindings': {
                     'uradmon_binding': {
                         'database': 'uradmon_sqlite',
@@ -44,11 +44,16 @@ class UradmonInstaller(ExtensionInstaller):
                    ('skins/uradmon',
                     ['skins/uradmon/skin.conf',
                      'skins/uradmon/index.html.tmpl',
+                     'skins/uradmon/about.inc',
                      'skins/uradmon/uradmon.inc',
+                     'skins/uradmon/seasons.css',
                     ]),
                    ('skins/uradmon/font',
                     ['skins/uradmon/font/OpenSans.woff',
                      'skins/uradmon/font/OpenSans.woff2',
+                    ]),
+                   ('skins/uradmon/images',
+                    ['skins/uradmon/images/urad-favicon.ico',
                     ])
                   ]
         )
