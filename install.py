@@ -22,7 +22,8 @@ class UradmonInstaller(ExtensionInstaller):
             config={
                 'UradMon': {
                     'data_binding': 'uradmon_binding',
-                    'uradmon_address': ''},
+                    'uradmon_address': '',
+                    '#urad_debug': 'True'},
                 'DataBindings': {
                     'uradmon_binding': {
                         'database': 'uradmon_sqlite',
