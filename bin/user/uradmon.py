@@ -82,13 +82,6 @@ schema = [
     ('uptime', 'INTEGER')
 ]
 
-def get_default_binding_dict():
-    return {'database': 'uradmon_sqlite',
-            'manager': 'weewx.manager.DaySummaryManager',
-            'table_name': 'archive',
-            'schema': 'user.uradmon.schema'}
-
-
 class UradMonSkin(SearchList):
     def __init__(self, generator):
         SearchList.__init__(self, generator)
@@ -98,41 +91,38 @@ class UradMon(weewx.engine.StdService):
     def __init__(self, engine, config_dict):
         super(UradMon, self).__init__(engine, config_dict)
         loginf('version is %s' % VERSION)
-        self.d_binding = '1'
-        d = config_dict.get('UradMon', {})
+        udict = config_dict.get('UradMon', {})
 
-        self.binding = d.get('binding', 'archive')
-        self.data_binding = d.get('data_binding', 'uradmon_binding')
-        self.rad_addr = d.get('uradmon_address', '')
+        self.rad_addr = udict.get('uradmon_address', '')
+        self.binding = udict.get('binding', 'archive')
+        self.data_binding = udict.get('data_binding', 'uradmon_binding')
+        self.dbm = self.engine.db_binder.get_manager(data_binding=self.data_binding,
+                                                     initialize=True)
 
-        if self.data_binding is not None:
-            dbm_dict = weewx.manager.get_manager_dict(config_dict['DataBindings'], config_dict['Databases'],self.data_binding, default_binding_dict=get_default_binding_dict())
-        with weewx.manager.open_manager(dbm_dict, initialize=True) as dbm:
-            # ensure schema on disk matches schema in memory
-            dbcol = dbm.connection.columnsOf(dbm.table_name)
-            memcol = [x[0] for x in dbm_dict['schema']]
-            if dbcol != memcol:
-                raise Exception('schema mismatch: %s != %s' %
-                                (dbcol, memcol))
+        # ensure schema on disk matches schema in memory
+        dbcol = self. dbm.connection.columnsOf(self.dbm.table_name)
+        dbm_dict = weewx.manager.get_manager_dict(
+            config_dict['DataBindings'], config_dict['Databases'], self.data_binding)
+        memcol = [x[0] for x in dbm_dict['schema']]
+        if dbcol != memcol:
+            raise Exception('schema mismatch: %s != %s' %
+                            (dbcol, memcol))
 
         #loginf("rad_address is :%s:" % self.rad_addr)
-        if self.binding == 'archive':
-            if self.rad_addr != '':
+        if self.rad_addr != '':
+            if self.binding == 'archive':
                 self.bind(weewx.NEW_ARCHIVE_RECORD, self.handle_new_archive)
             else:
-                loginf("No uRADMonitor address specified, skipping service")
-        else:
-            if self.rad_addr != '':
                 self.bind(weewx.NEW_LOOP_PACKET, self.handle_new_loop)
-            else:
-                loginf("No uRADMonitor address specified, skipping service")
+        else:
+            loginf("No uRADMonitor address specified, skipping service")
 
     def handle_new_archive(self, event):
         """save data to database"""
-        self.readData(event.record)
+        self.readdata(event.record)
         return
 
-    def readData(self, result):
+    def readdata(self, result):
         """
          As the browser returns it...
         {"data":{ "id":"82000079","type":"8","detector":"SI29BG","voltage":384,
@@ -148,20 +138,20 @@ class UradMon(weewx.engine.StdService):
 
         url = "http://" + self.rad_addr + "/j"
 
-        #stackoverflow.com/questions/9446387/how-to-retry-urllib2-request-when-fails
         attempts = 3
         assert attempts >= 1
         for _ in range(attempts):
             logdbg("connection attempt %s to %s" %(int(_+1), self.rad_addr))
             try:
-                time.sleep(_)
+                time.sleep(_) # crude backoff
                 _response = urllib2.urlopen(url, timeout=3)
-                break # success
+                break # on success
             except Exception as err:
                 logdbg("error (%s) on attempt %s to %s" %(err, int(_+1), self.rad_addr))
         else: # all attempts failed
             logerr("No data fetched, %s after %s attempts to %s" %(err, int(_+1), self.rad_addr))
             attempts = None
+
         if attempts is not None:
             logdbg("%s responded on attempt %s" %(self.rad_addr, int(_+1)))
             json_string = json.loads(_response.read().decode('utf-8'))
@@ -189,6 +179,4 @@ class UradMon(weewx.engine.StdService):
                    'uptime': json_string["data"]["uptime"]}
             logdbg(" rec is %s" % rec)
 
-            dbm_dict = weewx.manager.get_manager_dict(self.config_dict['DataBindings'], self.config_dict['Databases'],self.data_binding,default_binding_dict=get_default_binding_dict())
-            with weewx.manager.open_manager(dbm_dict) as dbm:
-                dbm.addRecord(rec)
+            self.dbm.addRecord(rec)
