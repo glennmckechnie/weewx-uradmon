@@ -11,7 +11,7 @@ def loader():
 class UradmonInstaller(ExtensionInstaller):
     def __init__(self):
         super(UradmonInstaller, self).__init__(
-            version="0.1.2",
+            version="0.1.0",
             name='uradmon',
             description='Generates a weewx report that displays'
                         'the values returned from an A3 uradmonitor'
