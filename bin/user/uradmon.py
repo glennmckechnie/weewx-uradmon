@@ -119,6 +119,12 @@ class UradMonSkin(SearchList):
     def __init__(self, generator):
         SearchList.__init__(self, generator)
 
+    def get_extension_list(self, timespan, db_lookup):
+        """
+        #urad_all  = {db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")}
+        # uradmon: skin all = set([(1521421527, 16, 1, 379, 19.0, 19.52, 53.08, 96438, 98337, 482, 0.0, 3, 1244368)])
+        #loginf("skin all = %s" % urad_all)
+        """
         self.uradmon_version = urad_version
         self.unit_id = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_id', 'xxXxXxXx')
@@ -126,22 +132,9 @@ class UradMonSkin(SearchList):
                     ('unit_model', 'uRADMonitor')
         self.unit_link = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_link', '\"https://www.uradmonitor.com/products/\"')
-        data_binding='uradmon_binding'
-        default_binding='uradmon_binding'
 
 
-    def get_extension_list(self, timespan, db_lookup):
-        """
-        #urad_all  = {db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")}
-        # uradmon: skin all = set([(1521421527, 16, 1, 379, 19.0, 19.52, 53.08, 96438, 98337, 482, 0.0, 3, 1244368)])
-        #loginf("skin all = %s" % urad_all)
-        """
-        urad_last = db_lookup().getSql("SELECT MAX(dateTime) FROM archive WHERE DateTime > 1")
-        #loginf("skin uptime = %s" % urad_last)
-        urad_ts = urad_last[0]
-        #loginf("skin last = %s" % urad_ts)
         urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")
-
 
         uvolt = urad_all[3]
         ucpm = urad_all[4]
@@ -153,17 +146,15 @@ class UradMonSkin(SearchList):
         uch2o = urad_all[10]
         upm25 = urad_all[11]
         urad_uptime = urad_all[12]
-        #loginf("weewx uptime value = %s" % urad_uptime_str)
-        urad_uptime_str = weewx.units.ValueHelper(value_t=(urad_uptime, "second", "group_deltatime"))
-        #urad_uptime_str = weewx.units.ValueHelper(value_t=(urad_uptime, "second", "group_deltatime"),
-        #                                          formatter=self.generator.formatter, converter=self.generator.converter)
+        urad_uptime_str = weewx.units.ValueHelper(value_t=(
+            urad_uptime, "second", "group_deltatime"))
         loginf("weewx uptime value = %s" % urad_uptime_str)
-        #urad_uptime_str = weewx.units.ValueHelper(value_t=(urad_uptime, "second", "group_deltatime"),
-        #                                          formatter=self.generator.formatter, converter=self.generator.converter)
-        #loginf("weewx2 uptime value = %s" % urad_uptime_str)
-        urad_extras = {'urad_uptime' : urad_uptime_str}
 
-        return [urad_extras]
+        urad_ext = {'urad_uptime' : urad_uptime_str, 'unit_id' : self.unit_id,
+                    'unit_model': self.unit_model, 'unit_link': self.unit_link,
+                    'uradmon_version': urad_version}
+
+        return [urad_ext]
 
 
 class UradMon(weewx.engine.StdService):

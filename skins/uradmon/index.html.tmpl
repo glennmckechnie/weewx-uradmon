@@ -24,12 +24,7 @@
        </div>
       </div>
     <div id="contents">
-    <!--
-    $current.uptime
-    $current.uptime
-    $latest.uptime
-    $latest.uptime
-    -->
+
       <p><a href="../index.html">&#10096; Current Conditions</a></p>
       <div id="widget_group">
         #include "about.inc"
@@ -48,16 +43,16 @@
                onclick="choose_history('year')">Year</a>
           </div>
           <div id="history_day" class="plot_container">
-            <img src="daycpm.png"  alt="Radiation dosage level"/>
-            <img src="dayvoc.png"        alt="Volatile organic compounds" />
-            <img src="dayco2.png"       alt="Carbon dioxide levels" />
-            <img src="daych20.png"    alt="Formaldehyde Levels" />
-            <img src="daypm25.png"    alt="2.5 particulates" />
-            <img src="dayuptime.png"    alt="uRADMonitor uptime" />
-            <img src="dayvolt.png"       alt="uRADMonitor voltage" />
-            <img src="daytemp.png"    alt="uRADMonitor temperature" />
-            <img src="dayhum.png"    alt="uRADMonitor humidity" />
-            <img src="daypressure.png"   alt="uRADMonitor pressure" />
+            <img src="daycpm.png"  alt="Radiation dosage level" title="Radiation at $latest.ucpm" />
+            <img src="dayvoc.png"        alt="Volatile organic compounds"  title="Volatile compounds at $latest.uvoc" />
+            <img src="dayco2.png"       alt="Carbon dioxide levels"  title="CO2 at $latest.uco2" />
+            <img src="daych20.png"    alt="Formaldehyde Levels"  title="Formaldaheyde at $latest.uch2o" />
+            <img src="daypm25.png"    alt="2.5 particulates"  title="Particles at 2,5, $latest.upm25" />
+            <img src="dayuptime.png"    alt="uRADMonitor uptime" title="Uptime of $urad_uptime" />
+            <img src="dayvolt.png"       alt="uRADMonitor voltage"  title="Voltage of$latest.uvolt" />
+            <img src="daytemp.png"    alt="uRADMonitor temperature"  title="Unit temperature of $latest.utemp" />
+            <img src="dayhum.png"    alt="uRADMonitor humidity"  title="Unit humidity of $latest.uhum" />
+            <img src="daypressure.png"   alt="uRADMonitor pressure"  title="Unit pressue (Pa) of $latest.upres" />
           </div>
           <div id="history_week" class="plot_container" style="display:none">
             <img src="weekcpm.png"  alt="Radiation dosage level"/>
