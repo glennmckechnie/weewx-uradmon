@@ -121,37 +121,38 @@ class UradMonSkin(SearchList):
 
     def get_extension_list(self, timespan, db_lookup):
         """
-        #urad_all  = {db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")}
-        # uradmon: skin all = set([(1521421527, 16, 1, 379, 19.0, 19.52, 53.08, 96438, 98337, 482, 0.0, 3, 1244368)])
+        #urad_all  = {db_lookup().getSql("SELECT * FROM archive ORDER BY
+                                                datetime DESC LIMIT 1")}
+        # uradmon: skin all = set([(1521421527, 16, 1, 379, 19.0, 19.52, 53.08,
+                                          96438, 98337, 482, 0.0, 3, 1244368)])
         #loginf("skin all = %s" % urad_all)
         """
-        self.uradmon_version = urad_version
-        self.unit_id = self.generator.skin_dict['Uradmonitor'].get \
+        unit_id = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_id', 'xxXxXxXx')
-        self.unit_model = self.generator.skin_dict['Uradmonitor'].get \
+        unit_model = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_model', 'uRADMonitor')
-        self.unit_link = self.generator.skin_dict['Uradmonitor'].get \
+        unit_link = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_link', '\"https://www.uradmonitor.com/products/\"')
 
 
-        urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")
+        urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY"
+                                      " datetime DESC LIMIT 1")
 
-        uvolt = urad_all[3]
-        ucpm = urad_all[4]
-        utemp = urad_all[5]
-        uhum = urad_all[6]
-        upres = urad_all[7]
-        uvoc = urad_all[8]
-        uco2 = urad_all[9]
-        uch2o = urad_all[10]
-        upm25 = urad_all[11]
+        #uvolt = urad_all[3]
+        #ucpm = urad_all[4]
+        #utemp = urad_all[5]
+        #uhum = urad_all[6]
+        #upres = urad_all[7]
+        #uvoc = urad_all[8]
+        #uco2 = urad_all[9]
+        #uch2o = urad_all[10]
+        #upm25 = urad_all[11]
         urad_uptime = urad_all[12]
         urad_uptime_str = weewx.units.ValueHelper(value_t=(
             urad_uptime, "second", "group_deltatime"))
-        loginf("weewx uptime value = %s" % urad_uptime_str)
 
-        urad_ext = {'urad_uptime' : urad_uptime_str, 'unit_id' : self.unit_id,
-                    'unit_model': self.unit_model, 'unit_link': self.unit_link,
+        urad_ext = {'urad_uptime' : urad_uptime_str, 'unit_id' : unit_id,
+                    'unit_model': unit_model, 'unit_link': unit_link,
                     'uradmon_version': urad_version}
 
         return [urad_ext]
@@ -238,15 +239,17 @@ class UradMon(weewx.engine.StdService):
                 break # on success
             except Exception as err:
                 if self.udebug:
-                    loginf("error (%s) on attempt %s to %s" %(err, int(_+1), self.rad_addr))
+                    loginf("error (%s) on attempt %s to %s" %
+                           (err, int(_ + 1), self.rad_addr))
         else: # all attempts failed
-            logerr("No data fetched, %s after %s attempts to %s" %(err, int(_+1), self.rad_addr))
+            logerr("No data fetched, %s after %s attempts to %s" %
+                   (err, int(_ + 1), self.rad_addr))
             attempts = None
 
         if attempts is not None:
             if self.udebug:
-                loginf("%s responded on attempt %s" %(self.rad_addr, int(_+1)))
-            self.json_string = json.loads(_response.read().decode('utf-8'))
+                loginf("%s responded on attempt %s" %(self.rad_addr, int(_ + 1)))
+            json_string = json.loads(_response.read().decode('utf-8'))
 
             # from the A3 - unused values
             #self.uuid = self.json_string["data"]["id"]
@@ -259,16 +262,16 @@ class UradMon(weewx.engine.StdService):
             rec = {'dateTime': timestamp,
                    'usUnits': weewx.METRIC,
                    'interval': int_one,
-                   'uvolt': self.json_string["data"]["voltage"],
-                   'ucpm': self.json_string["data"]["cpm"],
-                   'utemp': self.json_string["data"]["temperature"],
-                   'uhum': self.json_string["data"]["humidity"],
-                   'upres': self.json_string["data"]["pressure"],
-                   'uvoc': self.json_string["data"]["voc"],
-                   'uco2': self.json_string["data"]["co2"],
-                   'uch2o': self.json_string["data"]["ch2o"],
-                   'upm25': self.json_string["data"]["pm25"],
-                   'uptime': self.json_string["data"]["uptime"]}
+                   'uvolt': json_string["data"]["voltage"],
+                   'ucpm': json_string["data"]["cpm"],
+                   'utemp': json_string["data"]["temperature"],
+                   'uhum': json_string["data"]["humidity"],
+                   'upres': json_string["data"]["pressure"],
+                   'uvoc': json_string["data"]["voc"],
+                   'uco2': json_string["data"]["co2"],
+                   'uch2o': json_string["data"]["ch2o"],
+                   'upm25': json_string["data"]["pm25"],
+                   'uptime': json_string["data"]["uptime"]}
             if self.udebug:
                 loginf(" record is %s" % rec)
 
