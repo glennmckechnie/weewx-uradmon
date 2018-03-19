@@ -71,6 +71,7 @@ def loginf(msg):
 def logerr(msg):
     logmsg(syslog.LOG_ERR, msg)
 
+# the default schema, for A3
 schema = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
     ('usUnits', 'INTEGER NOT NULL'),
@@ -86,7 +87,7 @@ schema = [
     ('upm25', 'INTEGER'),
     ('uptime', 'INTEGER')
 ]
-# schema for A model
+# alternative schema, for A model
 schema_A = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
     ('usUnits', 'INTEGER NOT NULL'),
@@ -97,7 +98,7 @@ schema_A = [
     ('uptime', 'INTEGER')
 ]
 
-# schema for D model
+# alternative schema, for D model
 # apparently the D model can be slow to respond to a json query?
 schema_D = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
@@ -121,6 +122,8 @@ class UradMonSkin(SearchList):
 
     def get_extension_list(self, timespan, db_lookup):
         """
+        Skin - SLE for report generation
+
         #urad_all  = {db_lookup().getSql("SELECT * FROM archive ORDER BY
                                                 datetime DESC LIMIT 1")}
         # uradmon: skin all = set([(1521421527, 16, 1, 379, 19.0, 19.52, 53.08,
@@ -138,6 +141,7 @@ class UradMonSkin(SearchList):
         urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY"
                                       " datetime DESC LIMIT 1")
 
+        # do we want these ?? maybe one day :-)
         #uvolt = urad_all[3]
         #ucpm = urad_all[4]
         #utemp = urad_all[5]
@@ -147,7 +151,9 @@ class UradMonSkin(SearchList):
         #uco2 = urad_all[9]
         #uch2o = urad_all[10]
         #upm25 = urad_all[11]
+
         urad_uptime = urad_all[12]
+        # convert the seconds uptime output to a human readable string
         urad_uptime_str = weewx.units.ValueHelper(value_t=(
             urad_uptime, "second", "group_deltatime"))
 
@@ -159,6 +165,11 @@ class UradMonSkin(SearchList):
 
 
 class UradMon(weewx.engine.StdService):
+    """
+    Service to fetch data, store it in an appropriate database so that it's
+    available for the above SLE
+
+    """
     def __init__(self, engine, config_dict):
         super(UradMon, self).__init__(engine, config_dict)
         loginf('service version is %s' % urad_version)
@@ -257,11 +268,11 @@ class UradMon(weewx.engine.StdService):
             #self.udetect = self.json_string["data"]["detector"]
 
             timestamp = int(time.time())
-            int_one = 1
 
+            # defaults for the A3 model
             rec = {'dateTime': timestamp,
                    'usUnits': weewx.METRIC,
-                   'interval': int_one,
+                   'interval': '1',
                    'uvolt': json_string["data"]["voltage"],
                    'ucpm': json_string["data"]["cpm"],
                    'utemp': json_string["data"]["temperature"],
