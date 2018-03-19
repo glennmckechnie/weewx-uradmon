@@ -42,6 +42,7 @@ weewx.units.USUnits['group_mgram'] = 'microgram'
 weewx.units.MetricUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricUnits['group_ppm'] = 'ppm'
 weewx.units.MetricUnits['group_mgram'] = 'microgram'
+# crash# weewx.units.MetricUnits['group_pressure'] = 'Pa'
 weewx.units.MetricWXUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricWXUnits['group_ppm'] = 'ppm'
 weewx.units.MetricWXUnits['group_mgram'] = 'microgram'
@@ -53,6 +54,8 @@ weewx.units.default_unit_format_dict['microgram'] = '%.0f'
 weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
 weewx.units.default_unit_label_dict['ppm'] = ' ppm'
 weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
+
+#crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
 
 urad_version = "0.1.0"
 
@@ -83,6 +86,34 @@ schema = [
     ('upm25', 'INTEGER'),
     ('uptime', 'INTEGER')
 ]
+# schema for A model
+schema_A = [
+    ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
+    ('usUnits', 'INTEGER NOT NULL'),
+    ('interval', 'INTEGER NOT NULL'),
+    ('uvolt', 'INTEGER'),
+    ('ucpm', 'REAL'),
+    ('utemp', 'REAL'),
+    ('uptime', 'INTEGER')
+]
+
+# schema for D model
+# apparently the D model can be slow to respond to a json query?
+schema_D = [
+    ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
+    ('usUnits', 'INTEGER NOT NULL'),
+    ('interval', 'INTEGER NOT NULL'),
+    ('uvolt', 'INTEGER'),
+    ('ucpm', 'REAL'),
+    ('utemp', 'REAL'),
+    ('uhum', 'REAL'),
+    ('upres', 'INTEGER'),
+    ('uvoc', 'INTEGER'),
+    ('upm25', 'INTEGER'),
+    ('ubat', 'REAL'), # battery
+    ('uptime', 'INTEGER'),
+    ('urtc', 'INTEGER') # RTC
+]
 
 class UradMonSkin(SearchList):
     def __init__(self, generator):
@@ -95,7 +126,45 @@ class UradMonSkin(SearchList):
                     ('unit_model', 'uRADMonitor')
         self.unit_link = self.generator.skin_dict['Uradmonitor'].get \
                     ('unit_link', '\"https://www.uradmonitor.com/products/\"')
-        return
+        data_binding='uradmon_binding'
+        default_binding='uradmon_binding'
+
+
+    def get_extension_list(self, timespan, db_lookup):
+        """
+        #urad_all  = {db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")}
+        # uradmon: skin all = set([(1521421527, 16, 1, 379, 19.0, 19.52, 53.08, 96438, 98337, 482, 0.0, 3, 1244368)])
+        #loginf("skin all = %s" % urad_all)
+        """
+        urad_last = db_lookup().getSql("SELECT MAX(dateTime) FROM archive WHERE DateTime > 1")
+        #loginf("skin uptime = %s" % urad_last)
+        urad_ts = urad_last[0]
+        #loginf("skin last = %s" % urad_ts)
+        urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY datetime DESC LIMIT 1")
+
+
+        uvolt = urad_all[3]
+        ucpm = urad_all[4]
+        utemp = urad_all[5]
+        uhum = urad_all[6]
+        upres = urad_all[7]
+        uvoc = urad_all[8]
+        uco2 = urad_all[9]
+        uch2o = urad_all[10]
+        upm25 = urad_all[11]
+        urad_uptime = urad_all[12]
+        #loginf("weewx uptime value = %s" % urad_uptime_str)
+        urad_uptime_str = weewx.units.ValueHelper(value_t=(urad_uptime, "second", "group_deltatime"))
+        #urad_uptime_str = weewx.units.ValueHelper(value_t=(urad_uptime, "second", "group_deltatime"),
+        #                                          formatter=self.generator.formatter, converter=self.generator.converter)
+        loginf("weewx uptime value = %s" % urad_uptime_str)
+        #urad_uptime_str = weewx.units.ValueHelper(value_t=(urad_uptime, "second", "group_deltatime"),
+        #                                          formatter=self.generator.formatter, converter=self.generator.converter)
+        #loginf("weewx2 uptime value = %s" % urad_uptime_str)
+        urad_extras = {'urad_uptime' : urad_uptime_str}
+
+        return [urad_extras]
+
 
 class UradMon(weewx.engine.StdService):
     def __init__(self, engine, config_dict):
@@ -135,6 +204,7 @@ class UradMon(weewx.engine.StdService):
 
     def readdata(self):
         """
+        A3
          As the browser returns it...
         {"data":{ "id":"82000079","type":"8","detector":"SI29BG","voltage":384,
         "cpm":20,"temperature":23.07,"humidity":54.89,"pressure":96424,
@@ -145,6 +215,17 @@ class UradMon(weewx.engine.StdService):
          u'humidity': 54.97, u'pressure': 96428, u'voltage': 384, u'ch2o': 0.01,
         u'detector': u'SI29BG', u'type': u'8', u'id': u'82000079', u'pm25': 4,
         u'temperature': 23.07}}
+
+        A
+        {"data":{ "id":"11000061","type":"1","detector":"SBM20","voltage":379,
+        "cpm":24,"temperature":19.50,"uptime": 67088}}
+
+        D
+        {"data":{"id":"6400001B","type":"6","detector":"LND712","voltage":479,
+        "cpm":12,"temperature":33.56,"humidity":40.39,"pressure":100533,
+        "voc":8791,"pm25":0.00,"battery":4.18,"uptime":1328,"rtc":1520246972,
+        "latitude":-37.675000,"longitude":144.417000,"altitude":131.30,
+        "speed":0.36,"sats":5}}
         """
 
         url = "http://" + self.rad_addr + "/j"
@@ -153,8 +234,8 @@ class UradMon(weewx.engine.StdService):
         # this were hitting the uradmonitor every minute. A note exists that the
         # monitor is sensitive to DDOS attacks and shuts down when that occurs?
         # It wasn't shutting down for me, but it was slowing down, possibly
-        # getting close to it? All seems fine with this code, and even better
-        # with the cronjob cancelled (it's now redundant anyway)
+        # getting close to it? All seems fine with this code, and with the
+        # cronjob cancelled it's a lot better (the cronjob is now redundant anyway)
         attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
