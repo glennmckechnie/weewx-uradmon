@@ -60,13 +60,14 @@ eg:- The following extract shows your user...
         [...]
         user = weewx
 </pre>
-That user can now be assigned the appropriate permissions to operate the needed database...
+That user can now be assigned the appropriate permissions to operate the needed database, and you may need to create the user depending how you have previously setup weewx setup (the default is no mysql).
 
 <pre>
 mysql -uroot -p
 Enter password:
 
  [...]
+ MariaDB [(none)]>CREATE USER 'weewx'@'localhost' IDENTIFIED BY 'weewx';
  MariaDB [(none)]> GRANT select, update, create, delete, insert ON uradmon.* to weewx@localhost;
 Query OK, 0 rows affected (0.01 sec)
 
