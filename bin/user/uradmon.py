@@ -8,6 +8,8 @@
 #   Mistakes are mine, corrections and or improvements welcomed
 #      https://github.com/glennmckechnie/weewx-uradmon
 #
+# import weedb
+# import weeutil.weeutil
 #
 
 import json
@@ -17,9 +19,7 @@ import syslog
 
 import weewx
 import weewx.engine
-import weeutil.weeutil
-from weeutil.weeutil import to_bool
-import weedb
+from weeutil.weeutil import to_bool, to_int
 from weewx.cheetahgenerator import SearchList
 
 
@@ -55,21 +55,26 @@ weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
 weewx.units.default_unit_label_dict['ppm'] = ' ppm'
 weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
 
-#crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
+# crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
 
 urad_version = "0.1.0"
+
 
 def logmsg(level, msg):
     syslog.syslog(level, 'uradmon: %s' % msg)
 
+
 def logdbg(msg):
     logmsg(syslog.LOG_DEBUG, msg)
+
 
 def loginf(msg):
     logmsg(syslog.LOG_INFO, msg)
 
+
 def logerr(msg):
     logmsg(syslog.LOG_ERR, msg)
+
 
 # the default schema, for A3
 schema = [
@@ -111,12 +116,14 @@ schema_D = [
     ('upres', 'INTEGER'),
     ('uvoc', 'INTEGER'),
     ('upm25', 'INTEGER'),
-    ('ubat', 'REAL'), # battery
+    ('ubat', 'REAL'),  # battery
     ('uptime', 'INTEGER'),
-    ('urtc', 'INTEGER') # RTC
+    ('urtc', 'INTEGER')  # RTC
 ]
 
+
 class UradMonSkin(SearchList):
+
     def __init__(self, generator):
         SearchList.__init__(self, generator)
 
@@ -130,34 +137,33 @@ class UradMonSkin(SearchList):
                                           96438, 98337, 482, 0.0, 3, 1244368)])
         #loginf("skin all = %s" % urad_all)
         """
-        unit_id = self.generator.skin_dict['Uradmonitor'].get \
-                    ('unit_id', 'xxXxXxXx')
-        unit_model = self.generator.skin_dict['Uradmonitor'].get \
-                    ('unit_model', 'uRADMonitor')
-        unit_link = self.generator.skin_dict['Uradmonitor'].get \
-                    ('unit_link', '\"https://www.uradmonitor.com/products/\"')
-
+        unit_id = self.generator.skin_dict['Uradmonitor'].get(
+            'unit_id', 'xxXxXxXx')
+        unit_model = self.generator.skin_dict['Uradmonitor'].get(
+            'unit_model', 'uRADMonitor')
+        unit_link = self.generator.skin_dict['Uradmonitor'].get(
+            'unit_link', '\"https://www.uradmonitor.com/products/\"')
 
         urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY"
                                       " datetime DESC LIMIT 1")
 
         # do we want these ?? maybe one day :-)
-        #uvolt = urad_all[3]
-        #ucpm = urad_all[4]
-        #utemp = urad_all[5]
-        #uhum = urad_all[6]
-        #upres = urad_all[7]
-        #uvoc = urad_all[8]
-        #uco2 = urad_all[9]
-        #uch2o = urad_all[10]
-        #upm25 = urad_all[11]
+        # uvolt = urad_all[3]
+        # ucpm = urad_all[4]
+        # utemp = urad_all[5]
+        # uhum = urad_all[6]
+        # upres = urad_all[7]
+        # uvoc = urad_all[8]
+        # uco2 = urad_all[9]
+        # uch2o = urad_all[10]
+        # upm25 = urad_all[11]
 
         urad_uptime = urad_all[12]
         # convert the seconds uptime output to a human readable string
         urad_uptime_str = weewx.units.ValueHelper(value_t=(
             urad_uptime, "second", "group_deltatime"))
 
-        urad_ext = {'urad_uptime' : urad_uptime_str, 'unit_id' : unit_id,
+        urad_ext = {'urad_uptime': urad_uptime_str, 'unit_id': unit_id,
                     'unit_model': unit_model, 'unit_link': unit_link,
                     'uradmon_version': urad_version}
 
@@ -179,13 +185,18 @@ class UradMon(weewx.engine.StdService):
         self.rad_addr = udict.get('uradmon_address', '')
         self.binding = udict.get('binding', 'archive')
         self.data_binding = udict.get('data_binding', 'uradmon_binding')
-        self.dbm = self.engine.db_binder.get_manager(data_binding=self.data_binding,
-                                                     initialize=True)
+        self.dbm = self.engine.db_binder.get_manager(
+            data_binding=self.data_binding, initialize=True)
+        sf_int = to_int(config_dict['StdArchive'].get('archive_interval', 300))
+        loginf("archive_interval in seconds is %s" % sf_int)
+        self.rec_interval = sf_int / 60  # convert to minutes for databas entry
+        loginf("archive_interval in minutes is %s" % self.rec_interval)
 
         # ensure schema on disk matches schema in memory
         dbcol = self. dbm.connection.columnsOf(self.dbm.table_name)
-        dbm_dict = weewx.manager.get_manager_dict(
-            config_dict['DataBindings'], config_dict['Databases'], self.data_binding)
+        dbm_dict = weewx.manager.get_manager_dict(config_dict['DataBindings'],
+                                                  config_dict['Databases'],
+                                                  self.data_binding)
         memcol = [x[0] for x in dbm_dict['schema']]
         if dbcol != memcol:
             raise Exception('schema mismatch: %s != %s' %
@@ -215,7 +226,7 @@ class UradMon(weewx.engine.StdService):
 
          As .decode('utf-8') returns it...
         {u'data': {u'uptime': 36168, u'co2': 785, u'cpm': 18, u'voc': 12619,
-         u'humidity': 54.97, u'pressure': 96428, u'voltage': 384, u'ch2o': 0.01,
+        u'humidity': 54.97, u'pressure': 96428, u'voltage': 384, u'ch2o': 0.01,
         u'detector': u'SI29BG', u'type': u'8', u'id': u'82000079', u'pm25': 4,
         u'temperature': 23.07}}
 
@@ -233,46 +244,54 @@ class UradMon(weewx.engine.StdService):
 
         url = "http://" + self.rad_addr + "/j"
 
+        # test for self.self
+        # no_sf_int = sf_int
+        # print("%s" % no_sf_int)
+
         # I seemed to get a lot of timeouts, possibly because a cron job and
-        # this were hitting the uradmonitor every minute. A note exists that the
-        # monitor is sensitive to DDOS attacks and shuts down when that occurs?
+        # this were hitting the uradmonitor every minute. A note exists that
+        # the monitor is sensitive to DDOS attacks and shuts down when that
+        # occurs?
         # It wasn't shutting down for me, but it was slowing down, possibly
         # getting close to it? All seems fine with this code, and with the
-        # cronjob cancelled it's a lot better (the cronjob is now redundant anyway)
+        # cronjob cancelled it's a lot better (the cronjob is now redundant
+        # anyway)
         attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
             if self.udebug:
-                loginf("connection attempt %s to %s" %(int(_+1), self.rad_addr))
+                loginf("connection attempt %s to %s" % (int(_+1),
+                                                        self.rad_addr))
             try:
-                time.sleep(_) # crude backoff
-                _response = urllib2.urlopen(url, timeout=3) # local network = quick response.
-                break # on success
+                time.sleep(_)  # crude backoff
+                _response = urllib2.urlopen(url, timeout=3)  # local = quick
+                break  # on success
             except Exception as err:
                 if self.udebug:
                     loginf("error (%s) on attempt %s to %s" %
                            (err, int(_ + 1), self.rad_addr))
-        else: # all attempts failed
-            logerr("No data fetched, %s after %s attempts to %s" %
-                   (err, int(_ + 1), self.rad_addr))
+        else:  # all attempts failed
+            logerr("No data fetched, after %s attempts to %s" %
+                   (int(_ + 1), self.rad_addr))
             attempts = None
 
         if attempts is not None:
             if self.udebug:
-                loginf("%s responded on attempt %s" %(self.rad_addr, int(_ + 1)))
+                loginf("%s responded on attempt %s" % (self.rad_addr,
+                                                       int(_ + 1)))
             json_string = json.loads(_response.read().decode('utf-8'))
 
-            # from the A3 - unused values
-            #self.uuid = self.json_string["data"]["id"]
-            #self.utype = self.json_string["data"]["type"]
-            #self.udetect = self.json_string["data"]["detector"]
+            #  from the A3 - unused values
+            # self.uuid = self.json_string["data"]["id"]
+            # self.utype = self.json_string["data"]["type"]
+            # self.udetect = self.json_string["data"]["detector"]
 
             timestamp = int(time.time())
 
             # defaults for the A3 model
             rec = {'dateTime': timestamp,
                    'usUnits': weewx.METRIC,
-                   'interval': '1',
+                   'interval': self.rec_interval,
                    'uvolt': json_string["data"]["voltage"],
                    'ucpm': json_string["data"]["cpm"],
                    'utemp': json_string["data"]["temperature"],
