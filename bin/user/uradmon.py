@@ -270,6 +270,7 @@ class UradMon(weewx.engine.StdService):
                 if self.udebug:
                     loginf("error (%s) on attempt %s to %s" %
                            (err, int(_ + 1), self.rad_addr))
+                attempts = None
         else:  # all attempts failed
             logerr("No data fetched, after %s attempts to %s" %
                    (int(_ + 1), self.rad_addr))
