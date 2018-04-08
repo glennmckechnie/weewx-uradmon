@@ -5,8 +5,10 @@
 
 **Description**
 
-This is a skin that integrates with [weewx](http://weewx.com) (weather station software) and provides the capture and storage of the output from an A3 [uradmonitor](https://www.uradmonitor.com).
+This extension provides a Service, and a Report skin that integrates with [weewx](http://weewx.com) (weather station software). 
 
+The Service captures and stores the output from an A3 [uradmonitor](https://www.uradmonitor.com) into a local database at the exisiting archive interval (as set in weewx.conf)
+The Report will generate a seperate html page at weewx/uradmon/index.html with daily, weekly, monthly and yearly graphs as is done with the main weewx/ pages and your weather station.
 
 ***Instructions:***
 
@@ -60,7 +62,8 @@ eg:- The following extract shows your user...
         [...]
         user = weewx
 </pre>
-That user can now be assigned the appropriate permissions to operate the needed database, and you may need to create the user depending how you have previously setup weewx setup (the default is no mysql).
+That user can now be assigned the appropriate permissions to operate the needed database. 
+You may need to create the user depending how you have previously setup weewx setup (the default is sqlite only, ie:-  no mysql).
 
 <pre>
 mysql -uroot -p

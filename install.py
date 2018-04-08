@@ -13,8 +13,9 @@ class UradmonInstaller(ExtensionInstaller):
         super(UradmonInstaller, self).__init__(
             version="0.1.0",
             name='uradmon',
-            description='Generates a weewx report that displays'
-                        'the values returned from an A3 uradmonitor'
+            description='A service that collects data and generates'
+                        'a weewx report that displays the values'
+                        'returned from an A3 uradmonitor'
                         'https://www.uradmonitor.com',
             author="Glenn McKechnie",
             author_email="glenn.mckechnie@gmail.com",
