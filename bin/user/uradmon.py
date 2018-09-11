@@ -92,6 +92,7 @@ schema = [
     ('upm25', 'INTEGER'),
     ('uptime', 'INTEGER')
 ]
+"""
 # alternative schema, for A model
 schema_A = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
@@ -120,7 +121,7 @@ schema_D = [
     ('uptime', 'INTEGER'),
     ('urtc', 'INTEGER')  # RTC
 ]
-
+"""
 
 class UradMonSkin(SearchList):
 
