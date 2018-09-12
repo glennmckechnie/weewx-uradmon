@@ -30,9 +30,9 @@ The Report will generate a seperate html page at weewx/uradmon/index.html with d
         uradmon_address = 192.168.0.235
    </pre>
 
-   It will appear as above. Change the 192.168.0.235 to point to your unit, IP or Qualified name.
+   It will appear as above. Change the _192.168.0.235_ to point to your unit, using its __IP__ or __Qualified name.__
 
-   Next, edit the uradmon/skin.conf and in the top setion there is the unit_id that needs changing. Point it to yours.
+   Next, edit the uradmon/skin.conf and in the top setion there is the __unit_id__ that needs changing. Replace what's there with yours.
 
    <pre>
    [Uradmonitor]
@@ -86,7 +86,7 @@ eg:- The following extract shows your user...
         [...]
         user = weewx
 </pre>
-That user can now be assigned the appropriate permissions to operate the needed database. 
+That user can now be assigned the appropriate permissions to operate the needed database.
 You may need to create the user depending how you have previously setup weewx setup (the default is sqlite only, ie:-  no mysql).
 
 <pre>
@@ -104,7 +104,7 @@ Bye
 
 With the above step done you'll then need to change one of the uradmon entries that was installed by the uradmon extension into weewx.conf...
 
-Replace the old entry __database = uradmon_sqlite__  with your new one  __database = uradmon_mysql__ 
+Replace the old entry __database = uradmon_sqlite__  with your new one  __database = uradmon_mysql__
 eg:-
 
 <pre>
