@@ -20,7 +20,31 @@ The Report will generate a seperate html page at weewx/uradmon/index.html with d
 
    <pre>sudo wee_extension --install weewx-uradmon.zip</pre>
 
-3. Restart weewx
+3. Edit the main weewx.conf file and under the [Uradmon] section add the IP address of your unit.
+
+   <pre>
+    # Options for extension 'uradmon'
+    [UradMon]
+        #urad_debug = True
+        data_binding = uradmon_binding
+        uradmon_address = 192.168.0.235
+   </pre>
+
+   It will appear as above. Change the 192.168.0.235 to point to your unit, IP or Qualified name.
+
+   Next, edit the uradmon/skin.conf and in the top setion there is the unit_id that needs changing. Point it to yours.
+
+   <pre>
+   [Uradmonitor]
+           # id of your uradmonitor device, aka unit.
+           # This is the unique nuber allocated by the uradmonitor site and
+           # can be found on your dashboard page, once you are logged in.
+           unit_id = 82000079
+   </pre>
+
+
+
+4. Restart weewx
 
    <pre>
    sudo /etc/init.d/weewx stop
@@ -29,12 +53,12 @@ The Report will generate a seperate html page at weewx/uradmon/index.html with d
    </pre>
 
 
-4. Problems?
+5. Problems?
    Hopefully none but if there are then look at your logs - syslog and apache2/error.log. If you view them in a terminal window then you will see what's happening, as it occurs.
 
    (I find multitail -f /var/log/syslog /var/log/apache2/error.log works for me {adjust to suit your install} -- apt-get install multi-tail if needed)
 
-5.To uninstall
+6.To uninstall
 
    <pre>sudo wee_extension --uninstall uradmon</pre>
 
