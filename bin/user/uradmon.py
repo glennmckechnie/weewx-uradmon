@@ -57,7 +57,7 @@ weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
 
 # crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
 
-urad_version = "0.1.0"
+urad_version = "0.1.1"
 
 
 def logmsg(level, msg):
