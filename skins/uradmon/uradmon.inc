@@ -28,7 +28,7 @@
    Environmental stats as provided by<br>
    an <a href="$unit_link" target="_blank">$unit_model</a> from uRADMonitor.
    </p><p class="footnote">
-   <i>"Gamma radiation, formaldehyde, CO2,<br>
+   <i>Gamma radiation, formaldehyde, CO2,<br>
    tVOC Air quality +temperature,<br>
    barometric pressure, air humidity,<br>
    noise, and a laser scattering sensor<br>
