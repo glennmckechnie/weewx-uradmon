@@ -31,8 +31,8 @@
    <i>"Gamma radiation, formaldehyde, CO2,<br>
    tVOC Air quality +temperature,<br>
    barometric pressure, air humidity,<br>
-   and a laser scattering sensor for<br>
-   PM2.5 particulate matter.
+   noise, and a laser scattering sensor<br>
+   for PM2.5 particulate matter.
    </i></p>
    <table>
    <tr><td  colspan='2'><i>Local Environmental Stats</i></td></tr>
