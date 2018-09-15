@@ -47,7 +47,9 @@
             <img src="daycpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="dayvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="dayco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
-            <img src="daynoise.png"	alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />   
+            #if $day.noise.has_data
+                <img src="daynoise.png" alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #endif
             <img src="daych20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="daypm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="dayuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -60,7 +62,9 @@
             <img src="weekcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="weekvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="weekco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
-            <img src="weeknoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #if $week.noise.has_data
+                <img src="weeknoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #endif
             <img src="weekch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="weekpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="weekuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -73,7 +77,9 @@
             <img src="monthcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="monthvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="monthco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
-            <img src="monthnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #if $mon.noise.has_data
+                <img src="monthnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #endif
             <img src="monthch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="monthpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="monthuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -86,7 +92,9 @@
             <img src="yearcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="yearvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="yearco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
-            <img src="yearnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #if $year.noise.has_data
+                <img src="yearnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+            #endif
             <img src="yearch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="yearpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="yearuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />

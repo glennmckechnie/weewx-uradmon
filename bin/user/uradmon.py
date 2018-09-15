@@ -63,7 +63,7 @@ weewx.units.default_unit_label_dict['db'] = ' dB'
 
 # crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
 
-urad_version = "0.1.2"
+urad_version = "0.1.3"
 
 
 def logmsg(level, msg):
@@ -296,6 +296,10 @@ class UradMon(weewx.engine.StdService):
             # self.udetect = self.json_string["data"]["detector"]
 
             timestamp = int(time.time())
+            try:
+                unoise = json_string["data"]["noise"]
+            except KeyError:
+                unoise = None
 
             # defaults for the A3 model
             rec = {'dateTime': timestamp,
@@ -308,7 +312,7 @@ class UradMon(weewx.engine.StdService):
                    'upres': json_string["data"]["pressure"],
                    'uvoc': json_string["data"]["voc"],
                    'uco2': json_string["data"]["co2"],
-                   'unoise': json_string["data"]["noise"],
+                   'unoise': unoise,
                    'uch2o': json_string["data"]["ch2o"],
                    'upm25': json_string["data"]["pm25"],
                    'uptime': json_string["data"]["uptime"]}
