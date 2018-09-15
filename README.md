@@ -2,6 +2,13 @@
 
 # weewx-uradmon
 
+**Update: Sep 2018**
+
+This SLE has now been updated to capture, archive, and display the noise parameter.
+
+To do this the old database requires an extra field. This doesn't matter if you're doing a brand new install as it will obviously be created along with everything else. If you are upgrading though, you'll need to dump (if you want to restore your old data) and then rename (delete) your old database as uradmon will not use it in its current form.
+
+Thanks go to evilbunny2008 and lizdodd for this enhancement.
 
 **Description**
 
