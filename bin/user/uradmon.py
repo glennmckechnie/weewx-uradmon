@@ -1,4 +1,3 @@
-#
 #   Copyright (c) 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
 #   Credit to Tom Keffer <tkeffer@gmail.com>, Matthew Wall and the core
 #   weewx team, whom I've borrowed ideas and code from.
@@ -7,6 +6,7 @@
 #
 #   Mistakes are mine, corrections and or improvements welcomed
 #      https://github.com/glennmckechnie/weewx-uradmon
+#   and this section edited by Duane Groth
 #
 # import weedb
 # import weeutil.weeutil
@@ -28,6 +28,7 @@ weewx.units.obs_group_dict['uvolt'] = 'group_volt'
 weewx.units.obs_group_dict['ucpm'] = 'group_sievert'
 weewx.units.obs_group_dict['uvoc'] = 'group_ppm'
 weewx.units.obs_group_dict['uco2'] = 'group_ppm'
+weewx.units.obs_group_dict['unoise'] = 'group_db'
 weewx.units.obs_group_dict['uch2o'] = 'group_ppm'
 weewx.units.obs_group_dict['upm25'] = 'group_mgram'
 weewx.units.obs_group_dict['uptime'] = 'group_elapsed'
@@ -39,25 +40,30 @@ weewx.units.obs_group_dict['uhum'] = 'group_percent'
 weewx.units.USUnits['group_sievert'] = 'microsievert'
 weewx.units.USUnits['group_ppm'] = 'ppm'
 weewx.units.USUnits['group_mgram'] = 'microgram'
+weewx.units.USUnits['group_db'] = 'db'
 weewx.units.MetricUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricUnits['group_ppm'] = 'ppm'
 weewx.units.MetricUnits['group_mgram'] = 'microgram'
+weewx.units.MetricUnits['group_db'] = 'db'
 # crash# weewx.units.MetricUnits['group_pressure'] = 'Pa'
 weewx.units.MetricWXUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricWXUnits['group_ppm'] = 'ppm'
 weewx.units.MetricWXUnits['group_mgram'] = 'microgram'
+weewx.units.MetricWXUnits['group_db'] = 'db'
 
 weewx.units.default_unit_format_dict['microsievert'] = '%.0f'
 weewx.units.default_unit_format_dict['ppm'] = '%.1f'
 weewx.units.default_unit_format_dict['microgram'] = '%.0f'
+weewx.units.default_unit_format_dict['db'] = '%.0f'
 
 weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
 weewx.units.default_unit_label_dict['ppm'] = ' ppm'
 weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
+weewx.units.default_unit_label_dict['db'] = ' dB'
 
 # crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
 
-urad_version = "0.1.1"
+urad_version = "0.1.2"
 
 
 def logmsg(level, msg):
@@ -88,6 +94,7 @@ schema = [
     ('upres', 'INTEGER'),
     ('uvoc', 'INTEGER'),
     ('uco2', 'INTEGER'),
+    ('unoise', 'REAL'),
     ('uch2o', 'REAL'),
     ('upm25', 'INTEGER'),
     ('uptime', 'INTEGER')
@@ -190,7 +197,7 @@ class UradMon(weewx.engine.StdService):
             data_binding=self.data_binding, initialize=True)
         sf_int = to_int(config_dict['StdArchive'].get('archive_interval', 300))
         loginf("archive_interval in seconds is %s" % sf_int)
-        self.rec_interval = sf_int / 60  # convert to minutes for databas entry
+        self.rec_interval = sf_int / 60  # convert to minutes for database entry
         loginf("archive_interval in minutes is %s" % self.rec_interval)
 
         # ensure schema on disk matches schema in memory
@@ -223,7 +230,7 @@ class UradMon(weewx.engine.StdService):
          As the browser returns it...
         {"data":{ "id":"82000079","type":"8","detector":"SI29BG","voltage":384,
         "cpm":20,"temperature":23.07,"humidity":54.89,"pressure":96424,
-        "voc":12648,"co2":784,"ch2o":0.01,"pm25":3,"uptime": 36358}}
+        "voc":12648,"co2":784,"noise":44.08,"ch2o":0.01,"pm25":3,"uptime": 36358}}
 
          As .decode('utf-8') returns it...
         {u'data': {u'uptime': 36168, u'co2': 785, u'cpm': 18, u'voc': 12619,
@@ -301,6 +308,7 @@ class UradMon(weewx.engine.StdService):
                    'upres': json_string["data"]["pressure"],
                    'uvoc': json_string["data"]["voc"],
                    'uco2': json_string["data"]["co2"],
+                   'unoise': json_string["data"]["noise"],
                    'uch2o': json_string["data"]["ch2o"],
                    'upm25': json_string["data"]["pm25"],
                    'uptime': json_string["data"]["uptime"]}

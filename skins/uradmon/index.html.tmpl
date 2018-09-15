@@ -1,5 +1,6 @@
 ## Copyright 2009-2017 Tom Keffer, Matthew Wall
 ## Distributed under terms of GPLv3.  See LICENSE.txt for your rights.
+# Edits Glenn Mckechnie and Liz Dodd
 #errorCatcher Echo
 ## Specifying an encoding of UTF-8 is usually safe, but if the text is actually
 ## in Latin-1, then you should replace the string "UTF-8" with "latin-1".  If
@@ -9,7 +10,7 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <!-- meta http-equiv="refresh" content="900" -->
+    <meta http-equiv="refresh" content="300"> <!-- Refresh every 5 minutes -->
     <title>$station.location Environmental Stats</title>
     <link rel="icon" type="image/png" href="../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="seasons.css"/>
@@ -46,6 +47,7 @@
             <img src="daycpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="dayvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="dayco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+            <img src="daynoise.png"	alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />   
             <img src="daych20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="daypm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="dayuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -58,6 +60,7 @@
             <img src="weekcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="weekvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="weekco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+            <img src="weeknoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
             <img src="weekch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="weekpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="weekuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -70,6 +73,7 @@
             <img src="monthcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="monthvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="monthco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+            <img src="monthnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
             <img src="monthch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="monthpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="monthuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -82,6 +86,7 @@
             <img src="yearcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
             <img src="yearvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
             <img src="yearco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+            <img src="yearnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
             <img src="yearch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
             <img src="yearpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
             <img src="yearuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
@@ -89,10 +94,6 @@
             <img src="yeartemp.png"    alt="uRADMonitor temperature"  title="Latest: Unit Temperature &mdash; $latest.utemp.format('%.1f')" />
             <img src="yearhum.png"    alt="uRADMonitor humidity"  title="Latest: Unit Humidity &mdash; $latest.uhum.format('%.0f')" />
             <img src="yearpressure.png"   alt="uRADMonitor pressure"  title="Latest: Unit Pressure (Pa) &mdash; $latest.upres.format('%.0f')" />
-          </div>
-          <div id="history_dayrain" class="plot_container" style="display:none">
-          </div>
-          <div id="history_weekrain" class="plot_container" style="display:none">
           </div>
         </div>
       </div>
