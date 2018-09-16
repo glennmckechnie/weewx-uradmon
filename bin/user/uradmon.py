@@ -268,26 +268,36 @@ class UradMon(weewx.engine.StdService):
         assert attempts >= 1
         for _ in range(attempts):
             if self.udebug:
-                loginf("connection attempt %s to %s" % (int(_+1),
+                # loginf("START connection attempt %s, %s to %s" % (attempts, int(_+1),
                                                         self.rad_addr))
+                ## Fix logic for backoff - then test (uncomment and play)
+                ## if attempts is 3 or attempts is 2 or attempts is 1:
+                ## if attempts is 3 or attempts is 2:
+                #if attempts is 3:
+                #    url = "http://192.168.0.236/j"
+                #else:
+                #    url = "http://" + self.rad_addr + "/j"
+                #loginf("connection attempt %s, %s to %s or %s" % (attempts, int(_+1),
+                #                                                  self.rad_addr, url))
             try:
                 time.sleep(_)  # crude backoff
                 _response = urllib2.urlopen(url, timeout=3)  # local = quick
                 break  # on success
             except Exception as err:
                 if self.udebug:
-                    loginf("error (%s) on attempt %s to %s" %
-                           (err, int(_ + 1), self.rad_addr))
-                attempts = None
+                    loginf("error (%s) on attempt %s, %s to %s" %
+                           (err, attempts, int(_+1), self.rad_addr))
+                _ = _ - 1
+                attempts = int(attempts - 1)
         else:  # all attempts failed
             logerr("No data fetched, after %s attempts to %s" %
-                   (int(_ + 1), self.rad_addr))
+                   (int(_+1), self.rad_addr))
             attempts = None
 
         if attempts is not None:
             if self.udebug:
-                loginf("%s responded on attempt %s" % (self.rad_addr,
-                                                       int(_ + 1)))
+                loginf("%s responded on attempt %s, %s" % (self.rad_addr,
+                                                           attempts, int(_+1)))
             json_string = json.loads(_response.read().decode('utf-8'))
 
             #  from the A3 - unused values
