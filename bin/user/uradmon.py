@@ -267,10 +267,10 @@ class UradMon(weewx.engine.StdService):
         attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
-            if self.udebug:
-                # loginf("START connection attempt %s, %s to %s" % (attempts, int(_+1),
-                                                        self.rad_addr))
+            # if self.udebug:
                 ## Fix logic for backoff - then test (uncomment and play)
+                # loginf("START connection attempt %s, %s to %s" % (attempts, int(_+1),
+                #                                        self.rad_addr))
                 ## if attempts is 3 or attempts is 2 or attempts is 1:
                 ## if attempts is 3 or attempts is 2:
                 #if attempts is 3:
