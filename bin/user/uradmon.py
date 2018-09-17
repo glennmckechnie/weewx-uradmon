@@ -296,8 +296,10 @@ class UradMon(weewx.engine.StdService):
 
         if attempts is not None:
             if self.udebug:
-                loginf("%s responded on attempt %s, %s" % (self.rad_addr,
-                                                           attempts, int(_+1)))
+                # loginf("%s responded on attempt %s, %s" % (self.rad_addr,
+                #                                            int(_+1), attempts))
+                loginf("%s responded on attempt %s" % (self.rad_addr,
+                                                           int(_+1)))
             json_string = json.loads(_response.read().decode('utf-8'))
 
             #  from the A3 - unused values
@@ -327,6 +329,6 @@ class UradMon(weewx.engine.StdService):
                    'upm25': json_string["data"]["pm25"],
                    'uptime': json_string["data"]["uptime"]}
             if self.udebug:
-                loginf(" record is %s" % rec)
+                loginf(" record to store %s" % rec)
 
             self.dbm.addRecord(rec)
