@@ -1,6 +1,12 @@
 
 
 # weewx-uradmon
+**Note:**
+
+The master branch is stale. It does work, but it will soon be dropped as its database is incompatabile with the next versions,  Beta version. That version is on the dev branch and is being used to deal with a few issues that have been raised regarding the unit timing out at odd times.
+
+It is recomended that you use the dev branch, and upgrade when it is merged back into master. That time shouldn't be all that far away.
+
 
 **Update: Sep 2018**
 
