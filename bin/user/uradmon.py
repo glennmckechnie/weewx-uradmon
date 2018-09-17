@@ -285,13 +285,13 @@ class UradMon(weewx.engine.StdService):
                 break  # on success
             except Exception as err:
                 if self.udebug:
-                    loginf("error (%s) on attempt %s, %s to %s" %
-                           (err, attempts, int(_+1), self.rad_addr))
+                    loginf("error (%s) on attempt %s to %s" %
+                           (err, int(_+1), self.rad_addr))
                 _ = _ - 1
                 attempts = int(attempts - 1)
         else:  # all attempts failed
             logerr("No data fetched, after %s attempts to %s" %
-                   (int(_+1), self.rad_addr))
+                   (int(_+2), self.rad_addr))
             attempts = None
 
         if attempts is not None:
