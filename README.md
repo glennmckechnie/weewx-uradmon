@@ -1,16 +1,12 @@
 
 
 # weewx-uradmon
-**Note:**
 
-The master branch is stale. It does work, but it will soon be dropped as its database is incompatabile with the next versions,  Beta version. That version is on the dev branch and is being used to deal with a few issues that have been raised regarding the unit timing out at odd times.
+**Update: Jan 2020**
 
-It is recomended that you use the dev branch, and upgrade when it is merged back into master. That time shouldn't be all that far away.
+This runs under python 2.7 ; it should also run under python3 (ready for weewx4)
 
-
-**Update: Sep 2018**
-
-This SLE has now been updated to capture, archive, and display the noise parameter.
+The main change is that this weewx extension (SLE) has now been updated to capture, archive, and display the noise parameter. If your model does not capture noise, the skin will adapt by ignoring that field.
 
 To do this the old database requires an extra field. This doesn't matter if you're doing a brand new install as it will obviously be created along with everything else. If you are upgrading though, you'll need to dump (if you want to restore your old data) and then rename (delete) your old database as uradmon will not use it in its current form.
 
