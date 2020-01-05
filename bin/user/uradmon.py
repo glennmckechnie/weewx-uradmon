@@ -8,13 +8,14 @@
 #      https://github.com/glennmckechnie/weewx-uradmon
 #   and this section edited by Duane Groth
 #
-# import weedb
-# import weeutil.weeutil
-#
 
 import json
 import time
-import urllib2
+# adapt python2.7 code for python3 weewx
+try:
+    import urllib2
+except ImportError:
+    import urllib.request as urllib2
 import syslog
 
 import weewx
@@ -63,7 +64,7 @@ weewx.units.default_unit_label_dict['db'] = ' dB'
 
 # crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
 
-urad_version = "0.1.2"
+urad_version = "0.1.4"
 
 
 def logmsg(level, msg):
@@ -260,6 +261,11 @@ class UradMon(weewx.engine.StdService):
         # this were hitting the uradmonitor every minute. A note exists that
         # the monitor is sensitive to DDOS attacks and shuts down when that
         # occurs?
+        # See post at uradmonitor forum
+        # https://www.uradmonitor.com/topic/local-access-unit-can-fail-to-respond-to-local-json-queries/
+        #
+        # ToDo: use API !
+        #
         # It wasn't shutting down for me, but it was slowing down, possibly
         # getting close to it? All seems fine with this code, and with the
         # cronjob cancelled it's a lot better (the cronjob is now redundant
@@ -267,25 +273,39 @@ class UradMon(weewx.engine.StdService):
         attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
-            if self.udebug:
-                loginf("connection attempt %s to %s" % (int(_+1),
-                                                        self.rad_addr))
+            # if self.udebug:
+                ## Fix logic for backoff - then test (uncomment and play)
+                # loginf("START connection attempt %s, %s to %s" % (attempts, int(_+1),
+                #                                        self.rad_addr))
+                ## if attempts is 3 or attempts is 2 or attempts is 1:
+                ## if attempts is 3 or attempts is 2:
+                #if attempts is 3:
+                #    url = "http://192.168.0.236/j"
+                #else:
+                #    url = "http://" + self.rad_addr + "/j"
+                #loginf("connection attempt %s, %s to %s or %s" % (attempts, int(_+1),
+                #                                                  self.rad_addr, url))
             try:
-                time.sleep(_)  # crude backoff
+                time.sleep(_+1)  # crude backoff
+                loginf("crude backoff is %s seconds" % (_+1))
+                #_response = urllib.request.urlopen(url, timeout=3)  # local = quick
                 _response = urllib2.urlopen(url, timeout=3)  # local = quick
                 break  # on success
             except Exception as err:
                 if self.udebug:
                     loginf("error (%s) on attempt %s to %s" %
                            (err, int(_ + 1), self.rad_addr))
-                attempts = None
+                _ = _ - 1
+                attempts = int(attempts - 1)
         else:  # all attempts failed
             logerr("No data fetched, after %s attempts to %s" %
-                   (int(_ + 1), self.rad_addr))
+                   (int(_ + 2), self.rad_addr))
             attempts = None
 
         if attempts is not None:
             if self.udebug:
+                # loginf("%s responded on attempt %s, %s" % (self.rad_addr,
+                #                                            int(_+1), attempts))
                 loginf("%s responded on attempt %s" % (self.rad_addr,
                                                        int(_ + 1)))
             json_string = json.loads(_response.read().decode('utf-8'))
@@ -296,6 +316,10 @@ class UradMon(weewx.engine.StdService):
             # self.udetect = self.json_string["data"]["detector"]
 
             timestamp = int(time.time())
+            try:
+                unoise = json_string["data"]["noise"]
+            except KeyError:
+                unoise = None
 
             # defaults for the A3 model
             rec = {'dateTime': timestamp,
@@ -308,11 +332,11 @@ class UradMon(weewx.engine.StdService):
                    'upres': json_string["data"]["pressure"],
                    'uvoc': json_string["data"]["voc"],
                    'uco2': json_string["data"]["co2"],
-                   'unoise': json_string["data"]["noise"],
+                   'unoise': unoise,
                    'uch2o': json_string["data"]["ch2o"],
                    'upm25': json_string["data"]["pm25"],
                    'uptime': json_string["data"]["uptime"]}
             if self.udebug:
-                loginf(" record is %s" % rec)
+                loginf(" record to store %s" % rec)
 
             self.dbm.addRecord(rec)
