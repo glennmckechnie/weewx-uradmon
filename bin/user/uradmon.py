@@ -46,7 +46,6 @@ weewx.units.MetricUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricUnits['group_ppm'] = 'ppm'
 weewx.units.MetricUnits['group_mgram'] = 'microgram'
 weewx.units.MetricUnits['group_db'] = 'db'
-# crash# weewx.units.MetricUnits['group_pressure'] = 'Pa'
 weewx.units.MetricWXUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricWXUnits['group_ppm'] = 'ppm'
 weewx.units.MetricWXUnits['group_mgram'] = 'microgram'
@@ -57,12 +56,10 @@ weewx.units.default_unit_format_dict['ppm'] = '%.1f'
 weewx.units.default_unit_format_dict['microgram'] = '%.0f'
 weewx.units.default_unit_format_dict['db'] = '%.0f'
 
-weewx.units.default_unit_label_dict['microsievert'] = ' \xc2\xb5Sv/h'
-weewx.units.default_unit_label_dict['ppm'] = ' ppm'
-weewx.units.default_unit_label_dict['microgram'] = ' \xc2\xb5g/m\xc2\xb3'
-weewx.units.default_unit_label_dict['db'] = ' dB'
-
-# crash#weewx.units.conversionDict['Pa'] = {'mbar': lambda x: x * 1000}
+weewx.units.default_unit_label_dict['microsievert'] = u' µSv/h'
+weewx.units.default_unit_label_dict['ppm'] = u' ppm'
+weewx.units.default_unit_label_dict['microgram'] = u' µg/m3'
+weewx.units.default_unit_label_dict['db'] = u' dB'
 
 urad_version = "0.1.4"
 
