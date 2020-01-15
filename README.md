@@ -17,7 +17,7 @@ Thanks go to evilbunny2008 and lizdodd for this enhancement.
 This extension provides a Service, and a Report skin that integrates with [weewx](http://weewx.com) (weather station software).
 
 The Service captures and stores the output from a [uradmonitor](https://www.uradmonitor.com) into a local database at the exisiting archive interval (as set in weewx.conf).
-By default it captures the data from and A3 unit but it should also capture most other modules. Sqlite is the default database, mysql is also an option.
+By default it captures the data from an A3 unit but it should also capture most other modules. Sqlite is the default database, mysql is also an option.
 The Report will generate a seperate html page in the style of the Seasons skin. It will be located at weewx/uradmon/index.html with daily, weekly, monthly and yearly graphs as is done with the main weewx/ pages and your weather station.
 
 ***Instructions:***
