@@ -4,7 +4,7 @@
 
 **Update: Jan 2020**
 
-This runs under python 2.7 ; it should also run under python3 (ready for weewx4)
+This runs under python 2.7 ; it will also run under python3 as is required for weewx4.
 
 The main change is that this weewx extension (SLE) has now been updated to capture, archive, and display the noise parameter. If your model does not capture noise, the skin will adapt by ignoring that field.
 
@@ -14,22 +14,33 @@ Thanks go to evilbunny2008 and lizdodd for this enhancement.
 
 **Description**
 
-This extension provides a Service, and a Report skin that integrates with [weewx](http://weewx.com) (weather station software). 
+This extension provides a Service, and a Report skin that integrates with [weewx](http://weewx.com) (weather station software).
 
 The Service captures and stores the output from an A3 [uradmonitor](https://www.uradmonitor.com) into a local database at the exisiting archive interval (as set in weewx.conf)
-The Report will generate a seperate html page at weewx/uradmon/index.html with daily, weekly, monthly and yearly graphs as is done with the main weewx/ pages and your weather station.
+The Report will generate a seperate html page in the style of the Seasons skin. It will be located at weewx/uradmon/index.html with daily, weekly, monthly and yearly graphs as is done with the main weewx/ pages and your weather station.
 
 ***Instructions:***
 
+
+
 1. Download the skin to your weewx machine.
 
+    The latest working code can be found by using the following command...
+
     <pre>wget -O weewx-uradmon.zip https://github.com/glennmckechnie/weewx-uradmon/archive/master.zip</pre>
+
+    This version will have the most recent updates.
+
+    (Alternatively, it is packaged as a release under https://github.com/glennmckechnie/weewx-uradmon/releases
+    This gives a fixed (in time) version. You will need to adjust the following instructions by using the filename you downloaded.)
 
 2. Change to that directory and run the wee_extension installer
 
    <pre>sudo wee_extension --install weewx-uradmon.zip</pre>
 
-3. Edit the main weewx.conf file and under the [Uradmon] section add the IP address of your unit.
+   (or if using a release version, substitute the filename weewx-uradmon.zip with the downloaded file name (eg: v0.1.4.zip))
+
+3. You will need to edit the main weewx.conf file and under the [Uradmon] section add the IP address of your unit.
 
    <pre>
     # Options for extension 'uradmon'
@@ -41,7 +52,7 @@ The Report will generate a seperate html page at weewx/uradmon/index.html with d
 
    It will appear as above. Change the _192.168.0.235_ to point to your unit, using its __IP__ or __Qualified name.__
 
-   Next, edit the uradmon/skin.conf and in the top setion there is the __unit_id__ that needs changing. Replace what's there with yours.
+   Next, edit the uradmon/skin.conf and in the top setion there is the __unit_id__ that needs changing. Replace what is there with yours.
 
    <pre>
    [Uradmonitor]
@@ -103,7 +114,7 @@ mysql -uroot -p
 Enter password:
 
  [...]
- MariaDB [(none)]>CREATE USER 'weewx'@'localhost' IDENTIFIED BY 'weewx';
+ MariaDB [(none)]> CREATE USER 'weewx'@'localhost' IDENTIFIED BY 'weewx';
  MariaDB [(none)]> GRANT select, update, create, delete, insert ON uradmon.* to weewx@localhost;
 Query OK, 0 rows affected (0.01 sec)
 
