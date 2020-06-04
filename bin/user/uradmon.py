@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #   Copyright (c) 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
 #   Credit to Tom Keffer <tkeffer@gmail.com>, Matthew Wall and the core
 #   weewx team, whom I've borrowed ideas and code from.
@@ -16,7 +17,6 @@ try:
     import urllib2
 except ImportError:
     import urllib.request as urllib2
-import syslog
 
 import weewx
 import weewx.engine
@@ -31,7 +31,7 @@ weewx.units.obs_group_dict['uvoc'] = 'group_ppm'
 weewx.units.obs_group_dict['uco2'] = 'group_ppm'
 weewx.units.obs_group_dict['unoise'] = 'group_db'
 weewx.units.obs_group_dict['uch2o'] = 'group_ppm'
-weewx.units.obs_group_dict['upm25'] = 'group_mgram'
+weewx.units.obs_group_dict['upm25'] = 'group_concentration'
 weewx.units.obs_group_dict['uptime'] = 'group_elapsed'
 weewx.units.obs_group_dict['upres'] = 'group_pressure'
 weewx.units.obs_group_dict['utemp'] = 'group_temperature'
@@ -40,44 +40,59 @@ weewx.units.obs_group_dict['uhum'] = 'group_percent'
 # USUnits would be ????
 weewx.units.USUnits['group_sievert'] = 'microsievert'
 weewx.units.USUnits['group_ppm'] = 'ppm'
-weewx.units.USUnits['group_mgram'] = 'microgram'
+weewx.units.USUnits['group_concentration'] = 'microgram_per_meter_cubed'
 weewx.units.USUnits['group_db'] = 'db'
 weewx.units.MetricUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricUnits['group_ppm'] = 'ppm'
-weewx.units.MetricUnits['group_mgram'] = 'microgram'
+weewx.units.MetricUnits['group_concentration'] = 'microgram_per_meter_cubed'
 weewx.units.MetricUnits['group_db'] = 'db'
 weewx.units.MetricWXUnits['group_sievert'] = 'microsievert'
 weewx.units.MetricWXUnits['group_ppm'] = 'ppm'
-weewx.units.MetricWXUnits['group_mgram'] = 'microgram'
+weewx.units.MetricWXUnits['group_concentration'] = 'microgram_per_meter_cubed'
 weewx.units.MetricWXUnits['group_db'] = 'db'
 
 weewx.units.default_unit_format_dict['microsievert'] = '%.0f'
 weewx.units.default_unit_format_dict['ppm'] = '%.1f'
-weewx.units.default_unit_format_dict['microgram'] = '%.0f'
+weewx.units.default_unit_format_dict['microgram_per_meter_cubed'] = '%.0f'
 weewx.units.default_unit_format_dict['db'] = '%.0f'
 
 weewx.units.default_unit_label_dict['microsievert'] = u' µSv/h'
 weewx.units.default_unit_label_dict['ppm'] = u' ppm'
-weewx.units.default_unit_label_dict['microgram'] = u' µg/m3'
+weewx.units.default_unit_label_dict['microgram_per_meter_cubed']  = u' µg/m³'
 weewx.units.default_unit_label_dict['db'] = u' dB'
 
-urad_version = "0.1.4"
+urad_version = "0.1.5"
 
 
-def logmsg(level, msg):
-    syslog.syslog(level, 'uradmon: %s' % msg)
+try:
+    # weewx4 logging
+    import weeutil.logger
+    import logging
+    log = logging.getLogger(__name__)
 
+    def logdbg(msg):
+        log.debug(msg)
 
-def logdbg(msg):
-    logmsg(syslog.LOG_DEBUG, msg)
+    def loginf(msg):
+        log.info(msg)
 
+    def logerr(msg):
+        log.error(msg)
 
-def loginf(msg):
-    logmsg(syslog.LOG_INFO, msg)
+except ImportError:
+    # old-style weewx logging
+    import syslog
+    def logmsg(level, msg):
+        syslog.syslog(level, 'uradmon: %s' % msg)
 
+    def logdbg(msg):
+        logmsg(syslog.LOG_DEBUG, msg)
 
-def logerr(msg):
-    logmsg(syslog.LOG_ERR, msg)
+    def loginf(msg):
+        logmsg(syslog.LOG_INFO, msg)
+
+    def logerr(msg):
+        logmsg(syslog.LOG_ERR, msg)
 
 
 # the default schema, for A3
@@ -228,7 +243,8 @@ class UradMon(weewx.engine.StdService):
          As the browser returns it...
         {"data":{ "id":"82000079","type":"8","detector":"SI29BG","voltage":384,
         "cpm":20,"temperature":23.07,"humidity":54.89,"pressure":96424,
-        "voc":12648,"co2":784,"noise":44.08,"ch2o":0.01,"pm25":3,"uptime": 36358}}
+        "voc":12648,"co2":784,"noise":44.08,"ch2o":0.01,"pm25":3,
+        "uptime": 36358}}
 
          As .decode('utf-8') returns it...
         {u'data': {u'uptime': 36168, u'co2': 785, u'cpm': 18, u'voc': 12619,
@@ -280,12 +296,12 @@ class UradMon(weewx.engine.StdService):
                 #    url = "http://192.168.0.236/j"
                 #else:
                 #    url = "http://" + self.rad_addr + "/j"
-                #loginf("connection attempt %s, %s to %s or %s" % (attempts, int(_+1),
-                #                                                  self.rad_addr, url))
+                #loginf("connection attempt %s, %s to %s or %s" %
+                #        (attempts, int(_+1), self.rad_addr, url))
             try:
                 time.sleep(_+1)  # crude backoff
                 loginf("crude backoff is %s seconds" % (_+1))
-                #_response = urllib.request.urlopen(url, timeout=3)  # local = quick
+                #_response = urllib.request.urlopen(url, timeout=3)
                 _response = urllib2.urlopen(url, timeout=3)  # local = quick
                 break  # on success
             except Exception as err:
@@ -302,7 +318,8 @@ class UradMon(weewx.engine.StdService):
         if attempts is not None:
             if self.udebug:
                 # loginf("%s responded on attempt %s, %s" % (self.rad_addr,
-                #                                            int(_+1), attempts))
+                #                                            int(_+1),
+                #                                            attempts))
                 loginf("%s responded on attempt %s" % (self.rad_addr,
                                                        int(_ + 1)))
             json_string = json.loads(_response.read().decode('utf-8'))
