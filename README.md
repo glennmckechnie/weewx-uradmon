@@ -58,7 +58,7 @@ The Report will generate a seperate html page in the style of the Seasons skin. 
    <pre>
    [Uradmonitor]
            # id of your uradmonitor device, aka unit.
-           # This is the unique nuber allocated by the uradmonitor site and
+           # This is the unique number allocated by the uradmonitor site and
            # can be found on your dashboard page, once you are logged in.
            unit_id = 82000079
    </pre>
