@@ -4,7 +4,7 @@
 
 **Update: Feb 2022**
 
-This version is released as [v0.2.6] (https://github.com/glennmckechnie/weewx-uradmon/releases)
+This version is released as [v0.2.6](https://github.com/glennmckechnie/weewx-uradmon/releases)
 
 It has been reworked to include (if I've done it correctly) the A, D and Industrial units. It will detect which type based on the 'type' id returned from a json query. Currently it recognizes an A3 (type 8), an A (types 5 & 1), an Industrial (type 14) and a D model (type 6). Any other types will fall through to a syslog ERROR message with their corresponding json output. With that output we should be able to incorporate that hardware version, hopefully without any issues.
 
