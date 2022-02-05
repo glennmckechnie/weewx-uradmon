@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-#   Copyright (c) 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
+#   Copyright (c) 2017 -2022 Glenn McKechnie <glenn.mckechnie@gmail.com>
 #   Credit to Tom Keffer <tkeffer@gmail.com>, Matthew Wall and the core
 #   weewx team, whom I've borrowed ideas and code from.
 #   This code is based on the csv, pmon and cmon extensions by mwall
-#   Copyright 2017 Glenn McKechnie <glenn.mckechnie@gmail.com>
 #
 #   Mistakes are mine, corrections and or improvements welcomed
 #      https://github.com/glennmckechnie/weewx-uradmon
@@ -58,10 +57,10 @@ weewx.units.default_unit_format_dict['db'] = '%.0f'
 
 weewx.units.default_unit_label_dict['microsievert'] = u' µSv/h'
 weewx.units.default_unit_label_dict['ppm'] = u' ppm'
-weewx.units.default_unit_label_dict['microgram_per_meter_cubed']  = u' µg/m³'
+weewx.units.default_unit_label_dict['microgram_per_meter_cubed'] = u' µg/m³'
 weewx.units.default_unit_label_dict['db'] = u' dB'
 
-urad_version = "0.1.5"
+urad_version = "0.2.5"
 
 
 try:
@@ -82,6 +81,7 @@ try:
 except ImportError:
     # old-style weewx logging
     import syslog
+
     def logmsg(level, msg):
         syslog.syslog(level, 'uradmon: %s' % msg)
 
@@ -110,9 +110,38 @@ schema = [
     ('unoise', 'REAL'),
     ('uch2o', 'REAL'),
     ('upm25', 'INTEGER'),
+    ('uptime', 'INTEGER'),
+    ('ubat', 'REAL'),     # Battery
+    ('urtc', 'INTEGER'),  # RTC
+    ('us1', 'INTEGER'),
+    ('us2', 'INTEGER'),
+    ('us3', 'INTEGER'),
+    ('us4', 'INTEGER'),
+    ('upm1', 'INTEGER'),
+    ('upm10', 'INTEGER'),
+    ('ulat', 'REAL'),
+    ('ulong', 'REAL'),
+    ('ualt', 'REAL'),
+    ('uspeed', 'REAL'),
+    ('usats', 'INTEGER')
+    ]
+"""
+schema_A3 = [
+    ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
+    ('usUnits', 'INTEGER NOT NULL'),
+    ('interval', 'INTEGER NOT NULL'),
+    ('uvolt', 'INTEGER'),
+    ('ucpm', 'REAL'),
+    ('utemp', 'REAL'),
+    ('uhum', 'REAL'),
+    ('upres', 'INTEGER'),
+    ('uvoc', 'INTEGER'),
+    ('uco2', 'INTEGER'),
+    ('unoise', 'REAL'),
+    ('uch2o', 'REAL'),
+    ('upm25', 'INTEGER'),
     ('uptime', 'INTEGER')
 ]
-"""
 # alternative schema, for A model
 schema_A = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
@@ -126,7 +155,7 @@ schema_A = [
 
 # alternative schema, for D model
 # apparently the D model can be slow to respond to a json query?
-schema_D = [
+yschema_D = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
     ('usUnits', 'INTEGER NOT NULL'),
     ('interval', 'INTEGER NOT NULL'),
@@ -141,7 +170,27 @@ schema_D = [
     ('uptime', 'INTEGER'),
     ('urtc', 'INTEGER')  # RTC
 ]
+# schema for industrial
+schema_ind = [
+    ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
+    ('usUnits', 'INTEGER NOT NULL'),
+    ('interval', 'INTEGER NOT NULL'),
+    ('utemp', 'REAL'),
+    ('uhum', 'REAL'),
+    ('upres', 'INTEGER'),
+    ('uvoc', 'INTEGER'),
+    ('us1', 'INTEGER'),
+    ('us2', 'INTEGER'),
+    ('us3', 'INTEGER'),
+    ('us4', 'INTEGER'),
+    ('upm1', 'INTEGER'),
+    ('upm25', 'INTEGER'),
+    ('upm10', 'INTEGER'),
+    ('unoise', 'REAL'),
+    ('uptime', 'INTEGER')
+]
 """
+
 
 class UradMonSkin(SearchList):
 
@@ -210,9 +259,10 @@ class UradMon(weewx.engine.StdService):
             data_binding=self.data_binding, initialize=True)
         sf_int = to_int(config_dict['StdArchive'].get('archive_interval', 300))
         loginf("archive_interval in seconds is %s" % sf_int)
-        self.rec_interval = sf_int / 60  # convert to minutes for database entry
+        self.rec_interval = sf_int / 60  # convert to minute for database entry
         loginf("archive_interval in minutes is %s" % self.rec_interval)
 
+        """
         # ensure schema on disk matches schema in memory
         dbcol = self. dbm.connection.columnsOf(self.dbm.table_name)
         dbm_dict = weewx.manager.get_manager_dict(config_dict['DataBindings'],
@@ -222,6 +272,7 @@ class UradMon(weewx.engine.StdService):
         if dbcol != memcol:
             raise Exception('schema mismatch: %s != %s' %
                             (dbcol, memcol))
+        """
 
         loginf("uRADMonitor address is %s" % self.rad_addr)
         if self.rad_addr != '':
@@ -255,6 +306,10 @@ class UradMon(weewx.engine.StdService):
         A
         {"data":{ "id":"11000061","type":"1","detector":"SBM20","voltage":379,
         "cpm":24,"temperature":19.50,"uptime": 67088}}
+         or
+        {"data":{ "id":"51000040","type":"5","detector":"SBM20",
+        "cpm":21,"temperature":0.00,"uptime": 1235877}}
+
 
         D
         {"data":{"id":"6400001B","type":"6","detector":"LND712","voltage":479,
@@ -262,6 +317,12 @@ class UradMon(weewx.engine.StdService):
         "voc":8791,"pm25":0.00,"battery":4.18,"uptime":1328,"rtc":1520246972,
         "latitude":-37.675000,"longitude":144.417000,"altitude":131.30,
         "speed":0.36,"sats":5}}
+
+        Industrial
+        ip_address/j
+        {"data":{"id":"14000089","type":"14","temperature":4.78,"humidity":75.01,
+        "pressure":99812,"voc":167555,"s1":0.18,"s2":0.10,"s3":0.01,"s4":0.91,
+        "pm1":8,"pm25":10,"pm10":11,"noise":47.35,"uptime":384112}}
         """
 
         url = "http://" + self.rad_addr + "/j"
@@ -286,22 +347,22 @@ class UradMon(weewx.engine.StdService):
         attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
-            # if self.udebug:
-                ## Fix logic for backoff - then test (uncomment and play)
-                # loginf("START connection attempt %s, %s to %s" % (attempts, int(_+1),
-                #                                        self.rad_addr))
-                ## if attempts is 3 or attempts is 2 or attempts is 1:
-                ## if attempts is 3 or attempts is 2:
-                #if attempts is 3:
-                #    url = "http://192.168.0.236/j"
-                #else:
-                #    url = "http://" + self.rad_addr + "/j"
-                #loginf("connection attempt %s, %s to %s or %s" %
-                #        (attempts, int(_+1), self.rad_addr, url))
+            if self.udebug:
+                # Fix logic for backoff - then test (uncomment and play)
+                loginf("START connection attempt %s, %s to %s" %
+                       (attempts, int(_+1), self.rad_addr))
+                # if attempts is 3 or attempts is 2 or attempts is 1:
+                # if attempts is 3 or attempts is 2:
+                if attempts == 3:
+                    url = "http://192.168.0.235/j"
+                else:
+                    url = "http://" + self.rad_addr + "/j"
+                loginf("connection attempt %s, %s to %s or %s" %
+                       (attempts, int(_+1), self.rad_addr, url))
             try:
                 time.sleep(_+1)  # crude backoff
                 loginf("crude backoff is %s seconds" % (_+1))
-                #_response = urllib.request.urlopen(url, timeout=3)
+                # _response = urllib.request.urlopen(url, timeout=3)
                 _response = urllib2.urlopen(url, timeout=3)  # local = quick
                 break  # on success
             except Exception as err:
@@ -325,31 +386,93 @@ class UradMon(weewx.engine.StdService):
             json_string = json.loads(_response.read().decode('utf-8'))
 
             #  from the A3 - unused values
-            # self.uuid = self.json_string["data"]["id"]
-            # self.utype = self.json_string["data"]["type"]
-            # self.udetect = self.json_string["data"]["detector"]
+            self.uuid = json_string["data"]["id"]
+            self.utype = json_string["data"]["type"]
+            self.udetect = json_string["data"]["detector"]
+            if self.udebug:
+                loginf(" id : %s , type : %s , detector : %s" % (self.uuid,
+                                                                 self.utype,
+                                                                 self.udetect))
 
             timestamp = int(time.time())
-            try:
-                unoise = json_string["data"]["noise"]
-            except KeyError:
-                unoise = None
-
-            # defaults for the A3 model
+            # defaults values, always required.
             rec = {'dateTime': timestamp,
                    'usUnits': weewx.METRIC,
-                   'interval': self.rec_interval,
-                   'uvolt': json_string["data"]["voltage"],
-                   'ucpm': json_string["data"]["cpm"],
-                   'utemp': json_string["data"]["temperature"],
-                   'uhum': json_string["data"]["humidity"],
-                   'upres': json_string["data"]["pressure"],
-                   'uvoc': json_string["data"]["voc"],
-                   'uco2': json_string["data"]["co2"],
-                   'unoise': unoise,
-                   'uch2o': json_string["data"]["ch2o"],
-                   'upm25': json_string["data"]["pm25"],
-                   'uptime': json_string["data"]["uptime"]}
+                   'interval': self.rec_interval}
+
+            # values that are apparently optional depending on version / unit
+            try:
+                uvolt = json_string["data"]["voltage"]
+            except KeyError:
+                uvolt = None
+            try:
+                ucpm = json_string["data"]["cpm"]
+            except KeyError:
+                ucpm = None
+            # A3 model
+            if self.utype == '8':
+                # only applies to early units, they had no noise sensor
+                try:
+                    unoise = json_string["data"]["noise"]
+                except KeyError:
+                    unoise = None
+                rec.update({'uvolt': uvolt,
+                            'ucpm': ucpm,
+                            'utemp': json_string["data"]["temperature"],
+                            'uhum': json_string["data"]["humidity"],
+                            'upres': json_string["data"]["pressure"],
+                            'uvoc': json_string["data"]["voc"],
+                            'uco2': json_string["data"]["co2"],
+                            'unoise': unoise,
+                            'uch2o': json_string["data"]["ch2o"],
+                            'upm25': json_string["data"]["pm25"],
+                            'uptime': json_string["data"]["uptime"]})
+
+            # A model
+            elif self.utype == '5' or self.utype == '1':
+                rec.update({'uvolt': uvolt,
+                            'ucpm': ucpm,
+                            'utemp': json_string["data"]["temperature"],
+                            'uptime': json_string["data"]["uptime"]})
+
+            # Industrial Model
+            elif self.utype == '14':
+                rec.update({'utemp': json_string["data"]["temperature"],
+                            'uhum': json_string["data"]["humidity"],
+                            'upres': json_string["data"]["pressure"],
+                            'uvoc': json_string["data"]["voc"],
+                            'us1': json_string["data"]["s1"],
+                            'us2': json_string["data"]["s2"],
+                            'us3': json_string["data"]["s3"],
+                            'us4': json_string["data"]["s4"],
+                            'upm1': json_string["data"]["pm1"],
+                            'upm25': json_string["data"]["pm25"],
+                            'upm10': json_string["data"]["pm10"],
+                            'unoise': json_string["data"]["noise"],
+                            'uptime': json_string["data"]["uptime"]})
+
+            # D model
+            elif self.utype == '6':
+                rec.update({'uvolt': uvolt,
+                            'ucpm': ucpm,
+                            'utemp': json_string["data"]["temperature"],
+                            'uhum': json_string["data"]["humidity"],
+                            'upres': json_string["data"]["pressure"],
+                            'uvoc': json_string["data"]["voc"],
+                            'upm25': json_string["data"]["pm25"],
+                            'ubat': json_string["data"]["battery"],
+                            'urtc': json_string["data"]["rtc"],
+                            'uptime': json_string["data"]["uptime"],
+                            'ulat': json_string["data"]["latitude"],
+                            'ulong': json_string["data"]["longitude"],
+                            'ualt': json_string["data"]["altitude"],
+                            'uspeed': json_string["data"]["speed"],
+                            'usats': json_string["data"]["sats"]})
+
+            else:
+                logerr(" Argh, no hooks! Unit is a type %s. DEBUG info follows"
+                       % self.utype)
+                logerr(" DEBUG : json_string is %s" % json_string)
             if self.udebug:
                 loginf(" record to store %s" % rec)
 
