@@ -11,7 +11,7 @@ def loader():
 class UradmonInstaller(ExtensionInstaller):
     def __init__(self):
         super(UradmonInstaller, self).__init__(
-            version="0.2.5",
+            version="0.2.6",
             name='uradmon',
             description='A service that collects data and generates'
                         'a weewx report that displays the values'
@@ -56,6 +56,8 @@ class UradmonInstaller(ExtensionInstaller):
                    ('skins/uradmon/font',
                     ['skins/uradmon/font/OpenSans.woff',
                      'skins/uradmon/font/OpenSans.woff2',
+                     'skins/uradmon/font/OpenSans-Bold.ttf',
+                     'skins/uradmon/font/OpenSans-Regular.tff',
                     ]),
                    ('skins/uradmon/images',
                     ['skins/uradmon/images/urad-favicon.ico',

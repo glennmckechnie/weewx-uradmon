@@ -60,7 +60,7 @@ weewx.units.default_unit_label_dict['ppm'] = u' ppm'
 weewx.units.default_unit_label_dict['microgram_per_meter_cubed'] = u' µg/m³'
 weewx.units.default_unit_label_dict['db'] = u' dB'
 
-urad_version = "0.2.5"
+urad_version = "0.2.6"
 
 
 try:
@@ -208,7 +208,7 @@ class UradMonSkin(SearchList):
         #loginf("skin all = %s" % urad_all)
         """
         unit_id = self.generator.skin_dict['Uradmonitor'].get(
-            'unit_id', 'xxXxXxXx')
+            'unit_id', 'Enter_units_ID_Number')
         unit_model = self.generator.skin_dict['Uradmonitor'].get(
             'unit_model', 'uRADMonitor')
         unit_link = self.generator.skin_dict['Uradmonitor'].get(
