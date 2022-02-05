@@ -1,6 +1,6 @@
 # installer for uradmon
 # Copyright 2016 Matthew Wall
-# Co-opted by Glenn McKechnie 2017
+# Co-opted by Glenn McKechnie 2017 - 2022
 # Distributed under the terms of the GNU Public License (GPLv3)
 
 from setup import ExtensionInstaller
@@ -11,11 +11,11 @@ def loader():
 class UradmonInstaller(ExtensionInstaller):
     def __init__(self):
         super(UradmonInstaller, self).__init__(
-            version="0.1.5",
+            version="0.2.5",
             name='uradmon',
             description='A service that collects data and generates'
                         'a weewx report that displays the values'
-                        'returned from an A3 uradmonitor'
+                        'returned from a uradmonitor unit'
                         'https://www.uradmonitor.com',
             author="Glenn McKechnie",
             author_email="glenn.mckechnie@gmail.com",
