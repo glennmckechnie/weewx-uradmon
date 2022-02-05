@@ -9,6 +9,7 @@ This version is released as Version 0.2.5.
 It has been reworked to include (if I've done it correctly) the A, D and Industrial units. It will detect which type based on the 'type' id returned from a json query. Currently it recognizes an A3 (type 8), an A (types 5 & 1), an Industrial (type 14) and a D model (type 6). Any other types will fall through to a syslog ERROR message with their corresponding json output. With that output we should be able to incorporate that hardware version, hopefully without any issues.
 
 This version is not backwards compatable with the 1.5 series as it uses a different database schema. It was a case of the user hand editing the uradmon.py script to select the appropriate schema, or just having a one size fits all database with all the known fields present. I chose that later method. That's not to say that the code/database can't be tweaked to accomadate the original method but there is no reason to upgrade an existing installation to this version of the software. Nothing will be gained by it as this version is about incorporating other models.
+The database is now named 'uradmon2'. Just in case and because data is precious!
 
 Now, I don't own these extra units. If something breaks I'll need quality debug information to fix it. I will definitely need the json output from your unit. That should be available in your syslog as if it runs without finding a suitable hook, it will politely print the output there.
 

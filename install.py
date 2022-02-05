@@ -33,10 +33,10 @@ class UradmonInstaller(ExtensionInstaller):
                         'schema': 'user.uradmon.schema'}},
                 'Databases': {
                     'uradmon_sqlite': {
-                        'database_name': 'uradmon.sdb',
+                        'database_name': 'uradmon2.sdb',
                         'driver': 'weedb.sqlite'},
                     'uradmon_mysql': {
-                        'database_name': 'uradmon',
+                        'database_name': 'uradmon2',
                         'database_type': 'MySQL'}},
                 'StdReport': {
                     'uradmon': {
