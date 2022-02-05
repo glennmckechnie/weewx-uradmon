@@ -2,9 +2,29 @@
 
 # weewx-uradmon
 
+**Update: Feb 2022**
+
+This version is released as Version 0.2.5.
+
+It has been reworked to include (if I've done it correctly) the A, D and Industrial units. It will detect which type based on the 'type' id returned from a json query. Currently it recognizes an A3 (type 8), an A (types 5 & 1), an Industrial (type 14) and a D model (type 6). Any other types will fall through to a syslog ERROR message with their corresponding json output. With that output we should be able to incorporate that hardware version, hopefully without any issues.
+
+This version is not backwards compatable with the 1.5 series as it uses a different database schema. It was a case of the user hand editing the uradmon.py script to select the appropriate schema, or just having a one size fits all database with all the known fields present. I chose that later method. That's not to say that the code/database can't be tweaked to accomadate the original method but there is no reason to upgrade an existing installation to this version of the software. Nothing will be gained by it as this version is about incorporating other models.
+
+Now, I don't own these extra units. If something breaks I'll need quality debug information to fix it. I will definitely need the json output from your unit. That should be available in your syslog as if it runs without finding a suitable hook, it will politely print the output there.
+
+index.html.tmpl will need modifying if you are using anything other than an A or A3 model. Not every field contains data and therefore needs to be individually checked. The latest A3 units no longer have cpm, or volts in their output - a huge change from the original.
+skin.conf will also need adjusting for the extra database fields that become available with the Industrial and D models.
+The weewx documentation should cover everything you need to know about configuring the skin.conf and index.html.tmpls. It should be your first port of call to learn about tweaking weewx.
+
+If you have a problem you can't solve. Raise it as an issue on github or contact me directly. Github issues are best as it won't get lost plus everyone will know about it.
+
+If you fix a problem, no matter how small, then also let me known so that I can update it here.
+
+
+
 **Update: Jun 2020**
 
-This version has been rolled up and released as [v0.1.5](https://github.com/glennmckechnie/weewx-uradmon/releases)
+This version has been rolled up and released as [v0.1.5](https://github.com/glennmckechnie/weewx-uradmon/releases) and is the last in its line. It is was written for, and is best suited to the A3 units.
 
 Fix the utf-8 breakage (micros and cubes), add weewx4 logging.
 
