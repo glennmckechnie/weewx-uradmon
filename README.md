@@ -4,9 +4,11 @@
 
 
 **Update: 05 Feb 2022**
-Add languages to skin - currently available from master branch only - Work In Progress!
+
+Add languages to skin - currently available from master branch only - and it is a Work In Progress!
 
 Contributions welcomed!!
+See [issue #5](https://github.com/glennmckechnie/weewx-uradmon/issues/5) for a rundown on what is required
 
 **Update: Feb 2022**
 
