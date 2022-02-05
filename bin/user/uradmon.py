@@ -262,7 +262,6 @@ class UradMon(weewx.engine.StdService):
         self.rec_interval = sf_int / 60  # convert to minute for database entry
         loginf("archive_interval in minutes is %s" % self.rec_interval)
 
-        """
         # ensure schema on disk matches schema in memory
         dbcol = self. dbm.connection.columnsOf(self.dbm.table_name)
         dbm_dict = weewx.manager.get_manager_dict(config_dict['DataBindings'],
@@ -272,7 +271,6 @@ class UradMon(weewx.engine.StdService):
         if dbcol != memcol:
             raise Exception('schema mismatch: %s != %s' %
                             (dbcol, memcol))
-        """
 
         loginf("uRADMonitor address is %s" % self.rad_addr)
         if self.rad_addr != '':
