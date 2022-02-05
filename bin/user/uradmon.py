@@ -60,7 +60,7 @@ weewx.units.default_unit_label_dict['ppm'] = u' ppm'
 weewx.units.default_unit_label_dict['microgram_per_meter_cubed'] = u' µg/m³'
 weewx.units.default_unit_label_dict['db'] = u' dB'
 
-urad_version = "0.2.6"
+urad_version = "0.2.7"
 
 
 try:
