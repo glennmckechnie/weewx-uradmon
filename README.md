@@ -2,7 +2,11 @@
 
 # weewx-uradmon
 
-**Update: Jan 2020**
+**Update: Jun 2020**
+
+This version has been rolled up and released as [v0.1.5](https://github.com/glennmckechnie/weewx-uradmon/releases)
+
+Fix the utf-8 breakage (micros and cubes), add weewx4 logging.
 
 This runs under python 2.7 ; it will also run under python3 as is required for weewx4.
 
