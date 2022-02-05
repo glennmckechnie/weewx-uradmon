@@ -57,7 +57,7 @@ class UradmonInstaller(ExtensionInstaller):
                     ['skins/uradmon/font/OpenSans.woff',
                      'skins/uradmon/font/OpenSans.woff2',
                      'skins/uradmon/font/OpenSans-Bold.ttf',
-                     'skins/uradmon/font/OpenSans-Regular.tff',
+                     'skins/uradmon/font/OpenSans-Regular.ttf',
                     ]),
                    ('skins/uradmon/images',
                     ['skins/uradmon/images/urad-favicon.ico',
