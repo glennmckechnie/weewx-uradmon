@@ -2,6 +2,12 @@
 
 # weewx-uradmon
 
+
+**Update: 05 Feb 2022**
+Add languages to skin - currently available from master branch only - Work In Progress!
+
+Contributions welcomed!!
+
 **Update: Feb 2022**
 
 This version is released as [v0.2.6] (https://github.com/glennmckechnie/weewx-uradmon/releases)
