@@ -7,7 +7,8 @@
 
 Add languages to skin - currently available from master branch only - and it is a Work In Progress!
 
-This version is released as [v0.2.7](https://github.com/glennmckechnie/weewx-uradmon/releases)
+This version is tentatively released as [v0.2.7](https://github.com/glennmckechnie/weewx-uradmon/releases).
+In truth the master will be the most uptodate.
 
 Contributions welcomed!!
 See [issue #5](https://github.com/glennmckechnie/weewx-uradmon/issues/5) for a rundown on what is required
