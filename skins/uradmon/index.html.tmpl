@@ -6,6 +6,13 @@
 ## in Latin-1, then you should replace the string "UTF-8" with "latin-1".  If
 ## you do this, you should also change the charset in 'Content-Type' as well.
 #encoding UTF-8
+
+#set $periods = $DisplayOptions.get('periods', ['day', 'week', 'month', 'year'])
+#set $plot_groups = $DisplayOptions.get('plot_groups', ['tempdew', 'wind', 'rain'])
+
+## use this span to determine whether there are any data to consider.
+#set $recent=$span($day_delta=30, boundary='midnight')
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,137 +33,137 @@
       </div>
     <div id="contents">
 
-      <p><a href="../index.html">&#10096; Current Conditions</a></p>
+      <p><a href="../index.html">&#10096; $gettext("Current Conditions")</a></p>
       <div id="widget_group">
         #include "about.inc"
         #include "uradmon.inc"
       </div>
       <div id="plot_group">
         <div id="history_widget" class="widget">
-          <div id="plot_title" class="widget_title">uRADMonitor:&nbsp;&nbsp;Environmental&nbsp;&nbsp;(Air quality)&nbsp;&nbsp;history&nbsp;&nbsp;by&nbsp;&nbsp;
+          <div id="plot_title" class="widget_title">$gettext("uRADMonitor: Environmental (Air quality) history by")
             <a class="button_selected" id="button_history_day"
-               onclick="choose_history('day')">Day</a>
+               onclick="choose_history('day')">$gettext("Day")</a>
             <a class="button" id="button_history_week"
-               onclick="choose_history('week')">Week</a>
+               onclick="choose_history('week')">$gettext("Week")</a>
             <a class="button" id="button_history_month"
-               onclick="choose_history('month')">Month</a>
+               onclick="choose_history('month')">$gettext("Month")</a>
             <a class="button" id="button_history_year"
-               onclick="choose_history('year')">Year</a>
+               onclick="choose_history('year')">$gettext("Year")</a>
           </div>
           <div id="history_day" class="plot_container">
-            <img src="daycpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
+            <img src="daycpm.png"  alt='$gettext("Radiation dosage level")'  title='$gettext("Latest: Radiation") &mdash; $latest.ucpm.format('%.1f')' />
             #if $day.uvoc.has_data
-                <img src="dayvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
+                <img src="dayvoc.png"        alt='$gettext("Volatile organic compounds")'  title='$gettext("Latest: Volatile Organic Compounds") &mdash; $latest.uvoc.format('%.0f')' />
             #end if
             #if $day.uco2.has_data
-                <img src="dayco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+                <img src="dayco2.png"       alt='$gettext("Carbon dioxide levels")'  title='$gettext("Latest: CO2") &mdash; $latest.uco2.format('%.0f')' />
             #end if
             #if $day.unoise.has_data
-                <img src="daynoise.png" alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+                <img src="daynoise.png" alt='$gettext("Noise levels")'  title='$gettext("Latest: Noise") &mdash; $latest.unoise.format('%.0f')' />
             #end if
             #if $day.uch2o.has_data
-                <img src="daych20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
+                <img src="daych20.png"    alt='$gettext("Formaldehyde Levels")'  title='$gettext("Latest: Formaldehyde") &mdash; $latest.uch2o.format('%.2f')' />
             #end if
             #if $day.upm25.has_data
-                <img src="daypm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
+                <img src="daypm25.png"    alt='$gettext("2.5 particulates")'  title='$gettext("Latest: Particles at 2.5") &mdash; $latest.upm25.format('%.0f')' />
             #end if
-            <img src="dayuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
+            <img src="dayuptime.png"    alt='$gettext("uRADMonitor uptime")'  title='$gettext("Latest: Uptime") &mdash; $urad_uptime")' />
             #if $day.uvolt.has_data
-                <img src="dayvolt.png"       alt="uRADMonitor voltage"  title="Latest: Voltage &mdash; $latest.uvolt.format('%.0f')" />
+                <img src="dayvolt.png"       alt='$gettext("uRADMonitor voltage")'  title='$gettext("Latest: Voltage") &mdash; $latest.uvolt.format('%.0f')' />
             #end if
-            <img src="daytemp.png"    alt="uRADMonitor temperature"  title="Latest: Unit Temperature &mdash; $latest.utemp.format('%.1f')" />
+            <img src="daytemp.png"    alt='$gettext("uRADMonitor temperature")'  title='$gettext("Latest: Unit Temperature") &mdash; $latest.utemp.format('%.1f')' />
             #if $day.uhum.has_data
-                <img src="dayhum.png"    alt="uRADMonitor humidity"  title="Latest: Unit Humidity &mdash; $latest.uhum.format('%.0f')" />
+                <img src="dayhum.png"    alt='$gettext("uRADMonitor humidity")'  title='$gettext("Latest: Unit Humidity") &mdash; $latest.uhum.format('%.0f')' />
             #end if
             #if $day.upres.has_data
-                <img src="daypressure.png"   alt="uRADMonitor pressure"  title="Latest: Unit Pressure (Pa) &mdash; $latest.upres.format('%.0f')" />
+                <img src="daypressure.png"   alt='$gettext("uRADMonitor pressure")'  title='$gettext("Latest: Unit Pressure (Pa)") &mdash; $latest.upres.format('%.0f')' />
             #end if
           </div>
           <div id="history_week" class="plot_container" style="display:none">
-            <img src="weekcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
+            <img src="weekcpm.png"  alt='$gettext("Radiation dosage level")'  title='$gettext("Latest: Radiation") &mdash; $latest.ucpm.format('%.1f')' />
             #if $week.uvoc.has_data
-                <img src="weekvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
+                <img src="weekvoc.png"        alt='$gettext("Volatile organic compounds")'  title='$gettext("Latest: Volatile Organic Compounds") &mdash; $latest.uvoc.format('%.0f')' />
             #end if
             #if $week.uco2.has_data
-                <img src="weekco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+                <img src="weekco2.png"       alt='$gettext("Carbon dioxide levels")'  title='$gettext("Latest: CO2") &mdash; $latest.uco2.format('%.0f')' />
             #end if
             #if $week.unoise.has_data
-                <img src="weeknoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+                <img src="weeknoise.png"     alt='$gettext("Noise levels")'  title='$gettext("Latest: Noise") &mdash; $latest.unoise.format('%.0f')' />
             #end if
             #if $week.uch2o.has_data
-                <img src="weekch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
+                <img src="weekch20.png"    alt='$gettext("Formaldehyde Levels")'  title='$gettext("Latest: Formaldehyde") &mdash; $latest.uch2o.format('%.2f')' />
             #end if
             #if $week.upm25.has_data
-                <img src="weekpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
+                <img src="weekpm25.png"    alt='$gettext("2.5 particulates")'  title='$gettext("Latest: Particles at 2.5") &mdash; $latest.upm25.format('%.0f')' />
             #end if
-            <img src="weekuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
+            <img src="weekuptime.png"    alt='$gettext("uRADMonitor uptime")'  title='$gettext("Latest: Uptime") &mdash; $urad_uptime")' />
             #if $week.uvolt.has_data
-                <img src="weekvolt.png"       alt="uRADMonitor voltage"  title="Latest: Voltage &mdash; $latest.uvolt.format('%.0f')" />
+                <img src="weekvolt.png"       alt='$gettext("uRADMonitor voltage")'  title='$gettext("Latest: Voltage") &mdash; $latest.uvolt.format('%.0f')' />
             #end if
-            <img src="weektemp.png"    alt="uRADMonitor temperature"  title="Latest: Unit Temperature &mdash; $latest.utemp.format('%.1f')" />
+            <img src="weektemp.png"    alt='$gettext("uRADMonitor temperature")'  title='$gettext("Latest: Unit Temperature") &mdash; $latest.utemp.format('%.1f')' />
             #if $week.uhum.has_data
-                <img src="weekhum.png"    alt="uRADMonitor humidity"  title="Latest: Unit Humidity &mdash; $latest.uhum.format('%.0f')" />
+                <img src="weekhum.png"    alt='$gettext("uRADMonitor humidity")'  title='$gettext("Latest: Unit Humidity") &mdash; $latest.uhum.format('%.0f')' />
             #end if
             #if $week.upres.has_data
-                <img src="weekpressure.png"   alt="uRADMonitor pressure"  title="Latest: Unit Pressure (Pa) &mdash; $latest.upres.format('%.0f')" />
+                <img src="weekpressure.png"   alt='$gettext("uRADMonitor pressure")'  title='$gettext("Latest: Unit Pressure (Pa)") &mdash; $latest.upres.format('%.0f')' />
             #end if
           </div>
           <div id="history_month" class="plot_container" style="display:none">
-            <img src="monthcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
+            <img src="monthcpm.png"  alt='$gettext("Radiation dosage level")'  title='$gettext("Latest: Radiation") &mdash; $latest.ucpm.format('%.1f')' />
             #if $month.uvoc.has_data
-                <img src="monthvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
+                <img src="monthvoc.png"        alt='$gettext("Volatile organic compounds")'  title='$gettext("Latest: Volatile Organic Compounds") &mdash; $latest.uvoc.format('%.0f')' />
             #end if
             #if $month.uco2.has_data
-                <img src="monthco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+                <img src="monthco2.png"       alt='$gettext("Carbon dioxide levels")'  title='$gettext("Latest: CO2") &mdash; $latest.uco2.format('%.0f')' />
             #end if
             #if $month.unoise.has_data
-                <img src="monthnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+                <img src="monthnoise.png"     alt='$gettext("Noise levels")'  title='$gettext("Latest: Noise") &mdash; $latest.unoise.format('%.0f')' />
             #end if
             #if $month.uch2o.has_data
-                <img src="monthch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
+                <img src="monthch20.png"    alt='$gettext("Formaldehyde Levels")'  title='$gettext("Latest: Formaldehyde") &mdash; $latest.uch2o.format('%.2f')' />
             #end if
             #if $month.upm25.has_data
-                <img src="monthpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
+                <img src="monthpm25.png"    alt='$gettext("2.5 particulates")'  title='$gettext("Latest: Particles at 2.5") &mdash; $latest.upm25.format('%.0f')' />
             #end if
-            <img src="monthuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
+            <img src="monthuptime.png"    alt='$gettext("uRADMonitor uptime")'  title='$gettext("Latest: Uptime") &mdash; $urad_uptime")' />
             #if $month.uvolt.has_data
-                <img src="monthvolt.png"       alt="uRADMonitor voltage"  title="Latest: Voltage &mdash; $latest.uvolt.format('%.0f')" />
+                <img src="monthvolt.png"       alt='$gettext("uRADMonitor voltage")'  title='$gettext("Latest: Voltage") &mdash; $latest.uvolt.format('%.0f')' />
             #end if
-            <img src="monthtemp.png"    alt="uRADMonitor temperature"  title="Latest: Unit Temperature &mdash; $latest.utemp.format('%.1f')" />
+            <img src="monthtemp.png"    alt='$gettext("uRADMonitor temperature")'  title='$gettext("Latest: Unit Temperature") &mdash; $latest.utemp.format('%.1f')' />
             #if $month.uhum.has_data
-                <img src="monthhum.png"    alt="uRADMonitor humidity"  title="Latest: Unit Humidity &mdash; $latest.uhum.format('%.0f')" />
+                <img src="monthhum.png"    alt='$gettext("uRADMonitor humidity")'  title='$gettext("Latest: Unit Humidity") &mdash; $latest.uhum.format('%.0f')' />
             #end if
             #if $month.upres.has_data
-                <img src="monthpressure.png"   alt="uRADMonitor pressure"  title="Latest: Unit Pressure (Pa) &mdash; $latest.upres.format('%.0f')" />
+                <img src="monthpressure.png"   alt='$gettext("uRADMonitor pressure")'  title='$gettext("Latest: Unit Pressure (Pa)") &mdash; $latest.upres.format('%.0f')' />
             #end if
           </div>
           <div id="history_year" class="plot_container" style="display:none">
-            <img src="yearcpm.png"  alt="Radiation dosage level" title="Latest: Radiation &mdash; $latest.ucpm.format('%.1f')" />
+            <img src="yearcpm.png"  alt='$gettext("Radiation dosage level")'  title='$gettext("Latest: Radiation") &mdash; $latest.ucpm.format('%.1f')' />
             #if $year.uvoc.has_data
-                <img src="yearvoc.png"        alt="Volatile organic compounds"  title="Latest: Volatile Organic Compounds &mdash; $latest.uvoc.format('%.0f')" />
+                <img src="yearvoc.png"        alt='$gettext("Volatile organic compounds")'  title='$gettext("Latest: Volatile Organic Compounds") &mdash; $latest.uvoc.format('%.0f')' />
             #end if
             #if $year.uco2.has_data
-                <img src="yearco2.png"       alt="Carbon dioxide levels"  title="Latest: CO2 &mdash; $latest.uco2.format('%.0f')" />
+                <img src="yearco2.png"       alt='$gettext("Carbon dioxide levels")'  title='$gettext("Latest: CO2") &mdash; $latest.uco2.format('%.0f')' />
             #end if
             #if $year.unoise.has_data
-                <img src="yearnoise.png"     alt="Noise levels"  title="Latest: Noise &mdash; $latest.unoise.format('%.0f')" />
+                <img src="yearnoise.png"     alt='$gettext("Noise levels")'  title='$gettext("Latest: Noise") &mdash; $latest.unoise.format('%.0f')' />
             #end if
             #if $year.uch2o.has_data
-                <img src="yearch20.png"    alt="Formaldehyde Levels"  title="Latest: Formaldehyde &mdash; $latest.uch2o.format('%.2f')" />
+                <img src="yearch20.png"    alt='$gettext("Formaldehyde Levels")'  title='$gettext("Latest: Formaldehyde") &mdash; $latest.uch2o.format('%.2f')' />
             #end if
             #if $year.upm25.has_data
-                <img src="yearpm25.png"    alt="2.5 particulates"  title="Latest: Particles at 2.5 &mdash; $latest.upm25.format('%.0f')" />
+                <img src="yearpm25.png"    alt='$gettext("2.5 particulates")'  title='$gettext("Latest: Particles at 2.5") &mdash; $latest.upm25.format('%.0f')' />
             #end if
-                <img src="yearuptime.png"    alt="uRADMonitor uptime" title="Latest: Uptime &mdash; $urad_uptime" />
+                <img src="yearuptime.png"    alt='$gettext("uRADMonitor uptime")'  title='$gettext("Latest: Uptime") &mdash; $urad_uptime")' />
             #if $year.uvolt.has_data
-                <img src="yearvolt.png"       alt="uRADMonitor voltage"  title="Latest: Voltage &mdash; $latest.uvolt.format('%.0f')" />
+                <img src="yearvolt.png"       alt='$gettext("uRADMonitor voltage")'  title='$gettext("Latest: Voltage") &mdash; $latest.uvolt.format('%.0f')' />
             #end if
-            <img src="yeartemp.png"    alt="uRADMonitor temperature"  title="Latest: Unit Temperature &mdash; $latest.utemp.format('%.1f')" />
+            <img src="yeartemp.png"    alt='$gettext("uRADMonitor temperature")'  title='$gettext("Latest: Unit Temperature") &mdash; $latest.utemp.format('%.1f')' />
             #if $year.uhum.has_data
-                <img src="yearhum.png"    alt="uRADMonitor humidity"  title="Latest: Unit Humidity &mdash; $latest.uhum.format('%.0f')" />
+                <img src="yearhum.png"    alt='$gettext("uRADMonitor humidity")'  title='$gettext("Latest: Unit Humidity") &mdash; $latest.uhum.format('%.0f')' />
             #end if
             #if $year.upres.has_data
-                <img src="yearpressure.png"   alt="uRADMonitor pressure"  title="Latest: Unit Pressure (Pa) &mdash; $latest.upres.format('%.0f')" />
+                <img src="yearpressure.png"   alt='$gettext("uRADMonitor pressure")'  title='$gettext("Latest: Unit Pressure (Pa)") &mdash; $latest.upres.format('%.0f')' />
             #end if
           </div>
         </div>
@@ -164,7 +171,7 @@
     </div>
 
     <p class="footnote">
-         This weewx extension is available at github as <a href="https://github.com/glennmckechnie/weewx-uradmon">weewx-uradmon</a> : This is version $uradmon_version<br>
+         $gettext("This weewx extension is available at github as")' <a href='https://github.com/glennmckechnie/weewx-uradmon'> weewx-uradmon</a> : $gettext("This is version")' $uradmon_version<br>
     </p>
 
 </body>

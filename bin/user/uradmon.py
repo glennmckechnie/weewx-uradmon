@@ -259,9 +259,9 @@ class UradMon(weewx.engine.StdService):
         self.dbm = self.engine.db_binder.get_manager(
             data_binding=self.data_binding, initialize=True)
         sf_int = to_int(config_dict['StdArchive'].get('archive_interval', 300))
-        loginf("archive_interval in seconds is %s" % sf_int)
         self.rec_interval = sf_int / 60  # convert to minute for database entry
-        loginf("archive_interval in minutes is %s" % self.rec_interval)
+        loginf("archive_interval in seconds is %s, minutes %s" %
+               (sf_int, self.rec_interval))
 
         # It is possible to use the old database with v0.2.x uradmon.py however
         # the dbm schema check will fail, so a workaround is to disable it for

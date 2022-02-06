@@ -17,7 +17,7 @@
 <div id='uradmon_widget' class="widget">
   <div class="widget_title">
    <a class="widget_control_left"
-      onclick="toggle_widget('uradmon')">&diams;&nbsp;Air Quality (uRADMonitor)</a>
+      onclick="toggle_widget('uradmon')">&diams;&nbsp;$gettext("Air Quality (uRADMonitor)")</a>
     &nbsp;
     <a class="widget_control"
       onclick="toggle_widget('uradmon')">&diams;</a>
@@ -25,32 +25,33 @@
   <div class="widget_contents">
    <div id="uradmon_details">
    <p>
-   Environmental stats as provided by<br>
-   an <a href="$unit_link" target="_blank">$unit_model</a> Monitor from <a href="https://www.uradmonitor.com/products/">uRADMonitor.</a>
+   $gettext("Environmental stats as provided by an")<br>
+   <a href="$unit_link" target="_blank">$unit_model</a> $gettext("unit from uRADMonitor").
    </p><p class="footnote">
-   <i>Gamma radiation, formaldehyde, CO2,<br>
-   tVOC Air quality +temperature,<br>
-   barometric pressure, air humidity,<br>
-   noise, and a laser scattering sensor<br>
-   for PM2.5 particulate matter.
+   <i>
+   $gettext("Gamma radiation, formaldehyde, CO2"),<br>
+   $gettext("tVOC Air quality + temperature"),<br>
+   $gettext("barometric pressure, air humidity"),<br>
+   $gettext("noise &amp; laser scattering sensor for")<br>
+   $gettext("PM2.5 particulate matter").
    </i></p>
    <table>
-   <tr><td  colspan='2'><i>Local Environmental Stats</i></td></tr>
+   <tr><td colspan='2'><i>$gettext("Local Environmental Stats")</i></td></tr>
    <tr>
-   <td>
+    <td>
     &nbsp;<img src="images/urad-favicon.ico" width="16" height="16" alt="">
     </td>
     <td>
-    Local - <a href="index.html" target="_blank"> $unit_model uRADMonitor</a>
+    $gettext("Local") - <a href="index.html" target="_blank"> $gettext("uRADMonitor")</a>
    </tr>
 
-   <tr><td  colspan='2'><i>Stats from uRADMonitor site</i></td></tr>
+   <tr><td colspan='2'><i>$gettext("Stats from uRADMonitor site")</i></td></tr>
    <tr>
    <td>
    &nbsp;<img src="images/urad-favicon.ico" width="16" height="16" alt="">
    </td>
     <td>
-     <a href="https://www.uradmonitor.com/?open=$unit_id" target="_blank">uRAD Dashboard</a>
+     <a href="https://www.uradmonitor.com/?open=$unit_id" target="_blank">$gettext("uRAD Dashboard")</a>
     </td>
    </tr>
 
@@ -59,7 +60,7 @@
    &nbsp;<img src="images/urad-favicon.ico" width="16" height="16" alt="">
    </td>
     <td>
-     <a href="https://uradmonitor.com/tools/dashboard-04/?open=$unit_id" target="_blank">uRAD Graphs</a>
+     <a href="https://uradmonitor.com/tools/dashboard-04/?open=$unit_id" target="_blank">$gettext("uRAD Graphs")</a>
     </td>
    </tr>
 
