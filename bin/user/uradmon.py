@@ -252,6 +252,7 @@ class UradMon(weewx.engine.StdService):
         udict = config_dict.get('UradMon', {})
 
         self.udebug = to_bool(udict.get('urad_debug', False))
+        self.dbm_check = to_bool(udict.get('dbm_check', True))
         self.rad_addr = udict.get('uradmon_address', '')
         self.binding = udict.get('binding', 'archive')
         self.data_binding = udict.get('data_binding', 'uradmon_binding')
@@ -262,15 +263,25 @@ class UradMon(weewx.engine.StdService):
         self.rec_interval = sf_int / 60  # convert to minute for database entry
         loginf("archive_interval in minutes is %s" % self.rec_interval)
 
-        # ensure schema on disk matches schema in memory
-        dbcol = self. dbm.connection.columnsOf(self.dbm.table_name)
-        dbm_dict = weewx.manager.get_manager_dict(config_dict['DataBindings'],
+        # It is possible to use the old database with v0.2.x uradmon.py however
+        # the dbm schema check will fail, so a workaround is to disable it for
+        # that instance. You'll also need to point the weewx.conf database
+        # stanza to the old database, probably uradmon.sdb (sqlite) or
+        # uradmon (mysql)
+        # To disable this check add
+        #   dbm_check = False
+        # to the [UradMon] section in weewx.conf
+        if self.dbm_check:
+            # ensure schema on disk matches schema in memory
+            dbcol = self. dbm.connection.columnsOf(self.dbm.table_name)
+            dbm_dict = weewx.manager.get_manager_dict(
+                                                  config_dict['DataBindings'],
                                                   config_dict['Databases'],
                                                   self.data_binding)
-        memcol = [x[0] for x in dbm_dict['schema']]
-        if dbcol != memcol:
-            raise Exception('schema mismatch: %s != %s' %
-                            (dbcol, memcol))
+            memcol = [x[0] for x in dbm_dict['schema']]
+            if dbcol != memcol:
+                raise Exception('schema mismatch: %s != %s' %
+                                (dbcol, memcol))
 
         loginf("uRADMonitor address is %s" % self.rad_addr)
         if self.rad_addr != '':
@@ -345,6 +356,7 @@ class UradMon(weewx.engine.StdService):
         attempts = 3   # (0, 1, 2)
         assert attempts >= 1
         for _ in range(attempts):
+            """
             if self.udebug:
                 # Fix logic for backoff - then test (uncomment and play)
                 loginf("START connection attempt %s, %s to %s" %
@@ -357,9 +369,11 @@ class UradMon(weewx.engine.StdService):
                     url = "http://" + self.rad_addr + "/j"
                 loginf("connection attempt %s, %s to %s or %s" %
                        (attempts, int(_+1), self.rad_addr, url))
+            """
             try:
                 time.sleep(_+1)  # crude backoff
-                loginf("crude backoff is %s seconds" % (_+1))
+                if self.udebug:
+                    logdbg("crude backoff is %s seconds" % (_+1))
                 # _response = urllib.request.urlopen(url, timeout=3)
                 _response = urllib2.urlopen(url, timeout=3)  # local = quick
                 break  # on success
