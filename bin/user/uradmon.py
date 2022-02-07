@@ -22,14 +22,19 @@ import weewx.engine
 from weeutil.weeutil import to_bool, to_int
 from weewx.cheetahgenerator import SearchList
 
+"""
+https://www.uradmonitor.com/wp-content/uploads/2019/01/manual_a3_107_comp.pdf
+https://www.uradmonitor.com/wp-content/uploads/2021/08/
+ a3_datasheet_v109_en_compressed.pdf
+"""
 
 # add the required units
 weewx.units.obs_group_dict['uvolt'] = 'group_volt'
-weewx.units.obs_group_dict['ucpm'] = 'group_sievert'
-weewx.units.obs_group_dict['uvoc'] = 'group_ppm'
-weewx.units.obs_group_dict['uco2'] = 'group_ppm'
+weewx.units.obs_group_dict['ucpm'] = 'group_ion_radiation'
+weewx.units.obs_group_dict['uvoc'] = 'group_fraction'
+weewx.units.obs_group_dict['uco2'] = 'group_fraction'
 weewx.units.obs_group_dict['unoise'] = 'group_db'
-weewx.units.obs_group_dict['uch2o'] = 'group_ppm'
+weewx.units.obs_group_dict['uch2o'] = 'group_fraction'
 weewx.units.obs_group_dict['upm25'] = 'group_concentration'
 weewx.units.obs_group_dict['uptime'] = 'group_elapsed'
 weewx.units.obs_group_dict['upres'] = 'group_pressure'
@@ -37,28 +42,45 @@ weewx.units.obs_group_dict['utemp'] = 'group_temperature'
 weewx.units.obs_group_dict['uhum'] = 'group_percent'
 
 # USUnits would be ????
-weewx.units.USUnits['group_sievert'] = 'microsievert'
-weewx.units.USUnits['group_ppm'] = 'ppm'
-weewx.units.USUnits['group_concentration'] = 'microgram_per_meter_cubed'
-weewx.units.USUnits['group_db'] = 'db'
-weewx.units.MetricUnits['group_sievert'] = 'microsievert'
-weewx.units.MetricUnits['group_ppm'] = 'ppm'
-weewx.units.MetricUnits['group_concentration'] = 'microgram_per_meter_cubed'
-weewx.units.MetricUnits['group_db'] = 'db'
-weewx.units.MetricWXUnits['group_sievert'] = 'microsievert'
-weewx.units.MetricWXUnits['group_ppm'] = 'ppm'
-weewx.units.MetricWXUnits['group_concentration'] = 'microgram_per_meter_cubed'
-weewx.units.MetricWXUnits['group_db'] = 'db'
+weewx.units.USUnits['group_ion_radiation'] = 'cpm'
 
-weewx.units.default_unit_format_dict['microsievert'] = '%.0f'
-weewx.units.default_unit_format_dict['ppm'] = '%.1f'
-weewx.units.default_unit_format_dict['microgram_per_meter_cubed'] = '%.0f'
-weewx.units.default_unit_format_dict['db'] = '%.0f'
+weewx.units.MetricUnits['group_ion_radiation'] = 'cpm'
 
-weewx.units.default_unit_label_dict['microsievert'] = u' µSv/h'
-weewx.units.default_unit_label_dict['ppm'] = u' ppm'
-weewx.units.default_unit_label_dict['microgram_per_meter_cubed'] = u' µg/m³'
-weewx.units.default_unit_label_dict['db'] = u' dB'
+weewx.units.MetricWXUnits['group_ion_radiation'] = 'cpm'
+
+weewx.units.default_unit_format_dict['cpm'] = '%.0f'
+weewx.units.default_unit_format_dict['microsievert'] = '%.2f'
+weewx.units.default_unit_format_dict['Pa'] = '%.0f'
+
+weewx.units.default_unit_label_dict['microsievert'] = ' µSv/h'
+weewx.units.default_unit_label_dict['cpm'] = ' cpm'
+weewx.units.default_unit_label_dict['Pa'] = 'Pa '
+
+#weewx.units.conversionDict.update(
+#         {'Pa': {'hPa': lambda x: x * 100},
+#          'hPa': {'Pa': lambda x: x * 0.01}})
+"""
+cpm <to> microsieverts?
+
+https://physics.stackexchange.com/questions/272649/how-does-a-geiger-
+ counter-such-as-rd1706-converts-counts-per-minute-to-micro-s#272761
+
+Note 2:
+In the case of your updated question in the comments, technically there isn't
+really a direct equation converting counts per minute (CPM) to microsieverts
+because CPM is an electron count and microsieverts is a count of bodily damage.
+
+https://sapporohibaku.wordpress.com/2011/10/15/conversion-factor/
+
+SMB values from 1/150 through to 1/360 ??
+
+The value recorded from our uRADMon counters is listed as cpm, rather than
+microsieverts.
+"""
+# using a factor of 1/110 for the conversion!
+weewx.units.conversionDict.update(
+         {'cpm': {'microsievert': lambda x: x * 0.00909},
+          'microsievert': {'cpm': lambda x: x * 110}})
 
 urad_version = "0.2.7"
 

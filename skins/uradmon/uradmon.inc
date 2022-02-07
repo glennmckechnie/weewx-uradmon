@@ -42,7 +42,7 @@
     &nbsp;<img src="images/urad-favicon.ico" width="16" height="16" alt="">
     </td>
     <td>
-    $gettext("Local") - <a href="index.html" target="_blank"> $gettext("uRADMonitor")</a>
+    $gettext("Local") - <a href="index.html" target="_blank"> $unit_model $gettext("uRADMonitor")</a>
    </tr>
 
    <tr><td colspan='2'><i>$gettext("Stats from uRADMonitor site")</i></td></tr>
