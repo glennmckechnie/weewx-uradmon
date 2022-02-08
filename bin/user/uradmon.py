@@ -52,10 +52,10 @@ weewx.units.MetricWXUnits['group_ion_radiation'] = 'cpm'
 weewx.units.MetricWXUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.default_unit_format_dict['cpm'] = '%.0f'
-weewx.units.default_unit_format_dict['microsievert'] = '%.2f'
+weewx.units.default_unit_format_dict['micro_sievert'] = '%.2f'
 weewx.units.default_unit_format_dict['Pa'] = '%.0f'
 
-weewx.units.default_unit_label_dict['microsievert'] = ' µSv/h'
+weewx.units.default_unit_label_dict['micro_sievert'] = ' µSv/h'
 weewx.units.default_unit_label_dict['cpm'] = ' cpm'
 weewx.units.default_unit_label_dict['Pa'] = 'Pa '
 
@@ -86,8 +86,8 @@ microsieverts.
 """
 # using a factor of 1/110 for the conversion!
 weewx.units.conversionDict.update(
-         {'cpm': {'microsievert': lambda x: x * 0.00909},
-          'microsievert': {'cpm': lambda x: x * 110}})
+         {'cpm': {'micro_sievert': lambda x: x * 0.00909},
+          'micro_sievert': {'cpm': lambda x: x * 110}})
 
 urad_version = "0.2.7"
 
