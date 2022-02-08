@@ -37,16 +37,19 @@ weewx.units.obs_group_dict['unoise'] = 'group_db'
 weewx.units.obs_group_dict['uch2o'] = 'group_fraction'
 weewx.units.obs_group_dict['upm25'] = 'group_concentration'
 weewx.units.obs_group_dict['uptime'] = 'group_elapsed'
-weewx.units.obs_group_dict['upres'] = 'group_pressure'
+weewx.units.obs_group_dict['upres'] = 'group_urad_pressure'
 weewx.units.obs_group_dict['utemp'] = 'group_temperature'
 weewx.units.obs_group_dict['uhum'] = 'group_percent'
 
 # USUnits would be ????
 weewx.units.USUnits['group_ion_radiation'] = 'cpm'
+weewx.units.USUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.MetricUnits['group_ion_radiation'] = 'cpm'
+weewx.units.MetricUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.MetricWXUnits['group_ion_radiation'] = 'cpm'
+weewx.units.MetricWXUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.default_unit_format_dict['cpm'] = '%.0f'
 weewx.units.default_unit_format_dict['microsievert'] = '%.2f'
@@ -59,6 +62,10 @@ weewx.units.default_unit_label_dict['Pa'] = 'Pa '
 #weewx.units.conversionDict.update(
 #         {'Pa': {'hPa': lambda x: x * 100},
 #          'hPa': {'Pa': lambda x: x * 0.01}})
+weewx.units.conversionDict.update(
+         {'Pa': {'inHg': lambda x: x * 0.0295299875 * 0.01 ,
+                 'mmHg': lambda x: x * 0.0075, 'mbar': lambda x: x * 0.01,
+                 'kPa': lambda x: x * 0.0001, 'hPa': lambda x: x * 0.01}})
 """
 cpm <to> microsieverts?
 
@@ -236,24 +243,22 @@ class UradMonSkin(SearchList):
         unit_link = self.generator.skin_dict['Uradmonitor'].get(
             'unit_link', '\"https://www.uradmonitor.com/products/\"')
 
-        urad_all = db_lookup().getSql("SELECT * FROM archive ORDER BY"
-                                      " datetime DESC LIMIT 1")
+        urad_uptime_secs = db_lookup().getSql("SELECT uptime FROM archive"
+                                              " ORDER BY datetime"
+                                              " DESC LIMIT 1")
+        try:
+            loginf("urad_uptime_secs %s" % urad_uptime_secs)
+        except Exception as e:
+            loginf("urad_uptime not available : %s" % e)
 
-        # do we want these ?? maybe one day :-)
-        # uvolt = urad_all[3]
-        # ucpm = urad_all[4]
-        # utemp = urad_all[5]
-        # uhum = urad_all[6]
-        # upres = urad_all[7]
-        # uvoc = urad_all[8]
-        # uco2 = urad_all[9]
-        # uch2o = urad_all[10]
-        # upm25 = urad_all[11]
-
-        urad_uptime = urad_all[12]
-        # convert the seconds uptime output to a human readable string
+        # convert the seconds uptime output to a human readable string for the
+        # charts tool tip
         urad_uptime_str = weewx.units.ValueHelper(value_t=(
-            urad_uptime, "second", "group_deltatime"))
+                                           urad_uptime_secs,
+                                           "second", "group_deltatime"),
+                                           context='long_delta',
+                                           formatter=self.generator.formatter,
+                                           converter=self.generator.converter)
 
         urad_ext = {'urad_uptime': urad_uptime_str, 'unit_id': unit_id,
                     'unit_model': unit_model, 'unit_link': unit_link,
