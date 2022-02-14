@@ -2,6 +2,16 @@
 
 # weewx-uradmon
 
+**Update: 14 Feb 2022**
+
+Output of uRADMonitor units is C&deg;, cpm, Pa, ppm, ug/m^3, volts
+Add conversions for cpm to micro_sievert
+Add Conversions for Pa to hPa, mbar, inHG, mmHg
+Fix missing, b0rked en.conf entries
+
+No release ... yet. Awaiting feedback!
+Use the [master](https://github.com/glennmckechnie/weewx-uradmon/archive/refs/heads/master.zip) from the github repo.
+
 
 **Update: 05 Feb 2022**
 
