@@ -74,7 +74,7 @@ weewx.units.default_unit_format_dict['micro_sievert'] = '%.2f'
 weewx.units.default_unit_format_dict['Pa'] = '%.0f'
 
 weewx.units.default_unit_label_dict['cpm'] = ' cpm'
-weewx.units.default_unit_label['ppm'] = 'ppm'
+weewx.units.default_unit_label_dict['ppm'] = 'ppm'
 weewx.units.default_unit_label_dict['micro_sievert'] = ' µSv/h'
 weewx.units.default_unit_label_dict['Pa'] = 'Pa '
 

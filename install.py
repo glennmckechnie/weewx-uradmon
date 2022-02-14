@@ -17,7 +17,7 @@ urad_config = """
                 [UradMon]
                     data_binding = uradmon_binding
                     urad_debug = True
-                    uradmon_address = Enter_your_units_network_address_here
+                    uradmon_address = weewx.conf-Enter_your_network_address
                 [DataBindings]
                     [[uradmon_binding]]
                         database = uradmon_sqlite
@@ -28,26 +28,29 @@ urad_config = """
                     [[uradmon_sqlite]]
                         database_name = uradmon2.sdb
                         driver = weedb.sqlite
-                    #[[uradmon_mysql]]
-                    #    database_name = uradmon2
-                    #    database_type = MySQL'
                 [StdReport]
                     [[uradmon]]
                         enable = true
                         skin = uradmon
                         lang = en
                         # a reminder that the unit outputs METRIC. You can
-                        # change this to suit your setup.
+                        # change this to suit your setup. Options are US,
+                        # METRIC, METRICWX
                         unit_system = METRIC
                         HTML_ROOT = uradmon
                        [[[Units]]]
                            [[[[Groups]]]]
                               # These are the default units from the uradmon
                               # unit and driver. Change these to suit your needs
-                              group_urad_pressure = Pa    # Options are 'inHg', 'mmHg', 'mbar', or 'hPa'
-                              group_temperature = degree_C  # Options are 'degree_F' or 'degree_C'
-                              group_elapsed = seconds       # options are seconds', 'day ', 'hour,
-                              group_ion_radiation = cpm     # options are 'cpm' or 'micro_sievert'
+                              # Pressure options are 'inHg', 'mmHg', 'mbar', or 'hPa'
+                              group_urad_pressure = Pa
+                              # Degree options are 'degree_F' or 'degree_C'
+                              group_temperature = degree_C
+                              # Time options are second', 'day ', 'hour,
+                              group_elapsed = second
+                              # Radiation options are 'cpm' or 'micro_sievert'
+                              group_ion_radiation = cpm
+
 """
 
 

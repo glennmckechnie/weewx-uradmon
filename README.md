@@ -12,6 +12,16 @@ Fix missing, b0rked en.conf entries
 No release ... yet. Awaiting feedback!
 Use the [master](https://github.com/glennmckechnie/weewx-uradmon/archive/refs/heads/master.zip) from the github repo.
 
+Removed [[uradmon_mysql]] from install.py
+
+If it is, required then add it manually...
+```
+[Databases]
+    [[uradmon_mysql]]
+        database_name = uradmon2
+        database_type = MySQL
+```
+
 
 **Update: 05 Feb 2022**
 
