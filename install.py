@@ -1,9 +1,57 @@
 # installer for uradmon
-# Copyright 2016 Matthew Wall
+#    Copyright (c) 2019 Tom Keffer <tkeffer@gmail.com>
 # Co-opted by Glenn McKechnie 2017 - 2022
 # Distributed under the terms of the GNU Public License (GPLv3)
 
-from setup import ExtensionInstaller
+try:
+    # Python 2
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO
+
+import configobj
+from weecfg.extension import ExtensionInstaller
+
+urad_config = """
+                [UradMon]
+                    data_binding = uradmon_binding
+                    urad_debug = True
+                    uradmon_address = Enter_your_units_network_address_here
+                [DataBindings]
+                    [[uradmon_binding]]
+                        database = uradmon_sqlite
+                        table_name = archive
+                        manager = weewx.manager.DaySummaryManager
+                        schema = user.uradmon.schema
+                [Databases]
+                    [[uradmon_sqlite]]
+                        database_name = uradmon2.sdb
+                        driver = weedb.sqlite
+                    #[[uradmon_mysql]]
+                    #    database_name = uradmon2
+                    #    database_type = MySQL'
+                [StdReport]
+                    [[uradmon]]
+                        enable = true
+                        skin = uradmon
+                        lang = en
+                        # a reminder that the unit outputs METRIC. You can
+                        # change this to suit your setup.
+                        unit_system = METRIC
+                        HTML_ROOT = uradmon
+                       [[[Units]]]
+                           [[[[Groups]]]]
+                              # These are the default units from the uradmon
+                              # unit and driver. Change these to suit your needs
+                              group_urad_pressure = Pa    # Options are 'inHg', 'mmHg', 'mbar', or 'hPa'
+                              group_temperature = degree_C  # Options are 'degree_F' or 'degree_C'
+                              group_elapsed = seconds       # options are seconds', 'day ', 'hour,
+                              group_ion_radiation = cpm     # options are 'cpm' or 'micro_sievert'
+"""
+
+
+urad_dict = configobj.ConfigObj(StringIO(urad_config))
 
 def loader():
     return UradmonInstaller()
@@ -20,29 +68,7 @@ class UradmonInstaller(ExtensionInstaller):
             author="Glenn McKechnie",
             author_email="glenn.mckechnie@gmail.com",
             process_services='user.uradmon.UradMon',
-            config={
-                'UradMon': {
-                    'data_binding': 'uradmon_binding',
-                    'urad_debug': 'True',
-                    'uradmon_address': '192.168.0.235'},
-                'DataBindings': {
-                    'uradmon_binding': {
-                        'database': 'uradmon_sqlite',
-                        'table_name': 'archive',
-                        'manager': 'weewx.manager.DaySummaryManager',
-                        'schema': 'user.uradmon.schema'}},
-                'Databases': {
-                    'uradmon_sqlite': {
-                        'database_name': 'uradmon2.sdb',
-                        'driver': 'weedb.sqlite'},
-                    'uradmon_mysql': {
-                        'database_name': 'uradmon2',
-                        'database_type': 'MySQL'}},
-                'StdReport': {
-                    'uradmon': {
-                        'skin': 'uradmon',
-                        'HTML_ROOT': 'uradmon'
-                        }}},
+            config=urad_dict,
             files=[('bin/user',
                     ['bin/user/uradmon.py']),
                    ('skins/uradmon',
