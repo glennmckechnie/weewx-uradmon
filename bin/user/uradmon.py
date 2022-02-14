@@ -35,6 +35,9 @@ https://www.uradmonitor.com/wp-content/uploads/2021/08/
 # group_pressure units.
 # Also using group_ion_radiation for much the same reason, although that
 # doesn't appear to clash (has only one unit, with no existing conversions.)
+# group_fraction exists in 4.6.0. Renaming / keeping for compatability
+# group_concentration exists in 4.6.0. Renaming / keeping for compatability
+# / plus extra entry.
 weewx.units.obs_group_dict['uvolt'] = 'group_volt'
 weewx.units.obs_group_dict['ucpm'] = 'group_ion_radiation'
 weewx.units.obs_group_dict['uvoc'] = 'group_fraction'
@@ -48,26 +51,31 @@ weewx.units.obs_group_dict['utemp'] = 'group_temperature'
 weewx.units.obs_group_dict['uhum'] = 'group_percent'
 
 weewx.units.USUnits['group_ion_radiation'] = 'cpm'
-weewx.units.USUnits['group_concentration'] = 'ppm'
+weewx.units.USUnits['group_concentration'] = 'microgram_per_meter_cubed'
+weewx.units.USUnits['group_fraction'] = 'ppm'
 weewx.units.USUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.MetricUnits['group_ion_radiation'] = 'cpm'
-weewx.units.MetricUnits['group_concentration'] = 'ppm'
+weewx.units.MetricUnits['group_concentration'] = 'microgram_per_meter_cubed'
+weewx.units.MetricUnits['group_fraction'] = 'ppm'
 weewx.units.MetricUnits['group_urad_pressure'] = 'Pa'
 
 # possibly not needed as definitions because MetricUnits form the base of
 # MetricWX?
 # FIXME - to test
 weewx.units.MetricWXUnits['group_ion_radiation'] = 'cpm'
-weewx.units.MetricWXUnits['group_concentration'] = 'ppm'
+weewx.units.MetricWXUnits['group_concentration'] = 'microgram_per_meter_cubed'
+weewx.units.MetricWXUnits['group_fraction'] = 'ppm'
 weewx.units.MetricWXUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.default_unit_format_dict['cpm'] = '%.0f'
+weewx.units.default_unit_format_dict['ppm'] = '%.0f'
 weewx.units.default_unit_format_dict['micro_sievert'] = '%.2f'
 weewx.units.default_unit_format_dict['Pa'] = '%.0f'
 
-weewx.units.default_unit_label_dict['micro_sievert'] = ' µSv/h'
 weewx.units.default_unit_label_dict['cpm'] = ' cpm'
+weewx.units.default_unit_label['ppm'] = 'ppm'
+weewx.units.default_unit_label_dict['micro_sievert'] = ' µSv/h'
 weewx.units.default_unit_label_dict['Pa'] = 'Pa '
 
 # weewx.units.conversionDict.update(
@@ -103,7 +111,7 @@ https://sapporohibaku.wordpress.com/2011/10/15/conversion-factor/
 SMB values from 1/150 through to 1/360 ??
 """
 
-urad_version = "0.2.7"
+urad_version = "0.2.8"
 
 
 try:
