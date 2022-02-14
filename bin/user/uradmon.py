@@ -29,6 +29,12 @@ https://www.uradmonitor.com/wp-content/uploads/2021/08/
 """
 
 # add the required units
+#
+# FIXME - to test
+# Testing with group_urad_pressure to avoid clashes with existing
+# group_pressure units.
+# Also using group_ion_radiation for much the same reason, although that
+# doesn't appear to clash (has only one unit, with no existing conversions.)
 weewx.units.obs_group_dict['uvolt'] = 'group_volt'
 weewx.units.obs_group_dict['ucpm'] = 'group_ion_radiation'
 weewx.units.obs_group_dict['uvoc'] = 'group_fraction'
@@ -41,14 +47,19 @@ weewx.units.obs_group_dict['upres'] = 'group_urad_pressure'
 weewx.units.obs_group_dict['utemp'] = 'group_temperature'
 weewx.units.obs_group_dict['uhum'] = 'group_percent'
 
-# USUnits would be ????
 weewx.units.USUnits['group_ion_radiation'] = 'cpm'
+weewx.units.USUnits['group_concentration'] = 'ppm'
 weewx.units.USUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.MetricUnits['group_ion_radiation'] = 'cpm'
+weewx.units.MetricUnits['group_concentration'] = 'ppm'
 weewx.units.MetricUnits['group_urad_pressure'] = 'Pa'
 
+# possibly not needed as definitions because MetricUnits form the base of
+# MetricWX?
+# FIXME - to test
 weewx.units.MetricWXUnits['group_ion_radiation'] = 'cpm'
+weewx.units.MetricWXUnits['group_concentration'] = 'ppm'
 weewx.units.MetricWXUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.default_unit_format_dict['cpm'] = '%.0f'
@@ -59,35 +70,38 @@ weewx.units.default_unit_label_dict['micro_sievert'] = ' µSv/h'
 weewx.units.default_unit_label_dict['cpm'] = ' cpm'
 weewx.units.default_unit_label_dict['Pa'] = 'Pa '
 
-#weewx.units.conversionDict.update(
+# weewx.units.conversionDict.update(
 #         {'Pa': {'hPa': lambda x: x * 100},
 #          'hPa': {'Pa': lambda x: x * 0.01}})
+# FIXME ... more testing required.
 weewx.units.conversionDict.update(
-         {'Pa': {'inHg': lambda x: x * 0.0295299875 * 0.01 ,
+         {'Pa': {'inHg': lambda x: x * 0.0295299875 * 0.01,
                  'mmHg': lambda x: x * 0.0075, 'mbar': lambda x: x * 0.01,
                  'kPa': lambda x: x * 0.0001, 'hPa': lambda x: x * 0.01}})
+
+# The value recorded from our uRADMon counters is listed as cpm, rather than
+# microsieverts.
+# using a factor of 1/110 for the conversion!
+weewx.units.conversionDict.update(
+         {'cpm': {'micro_sievert': lambda x: x * 0.00909},
+          'micro_sievert': {'cpm': lambda x: x * 110}})
+
 """
 cpm <to> microsieverts?
 
 https://physics.stackexchange.com/questions/272649/how-does-a-geiger-
  counter-such-as-rd1706-converts-counts-per-minute-to-micro-s#272761
 
-Note 2:
+'Note 2:
 In the case of your updated question in the comments, technically there isn't
 really a direct equation converting counts per minute (CPM) to microsieverts
-because CPM is an electron count and microsieverts is a count of bodily damage.
+because CPM is an electron count and microsieverts is a count of bodily
+damage.'
 
 https://sapporohibaku.wordpress.com/2011/10/15/conversion-factor/
 
 SMB values from 1/150 through to 1/360 ??
-
-The value recorded from our uRADMon counters is listed as cpm, rather than
-microsieverts.
 """
-# using a factor of 1/110 for the conversion!
-weewx.units.conversionDict.update(
-         {'cpm': {'micro_sievert': lambda x: x * 0.00909},
-          'micro_sievert': {'cpm': lambda x: x * 110}})
 
 urad_version = "0.2.7"
 
