@@ -17,6 +17,8 @@ urad_config = """
                 [UradMon]
                     data_binding = uradmon_binding
                     urad_debug = True
+                    # change dbm_check to False if schema mismatch + v0.1.x
+                    # data see site README
                     dbm_check = True
                     uradmon_address = weewx.conf-Enter_your_network_address
                 [DataBindings]
