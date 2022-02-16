@@ -4,6 +4,13 @@
 
 **Update: 14 Feb 2022**
 
+If you are using an existing database and you get a schema mismatch then set dbm_check to False in weewx.conf
+
+change from ...
+'dbm_check = True'
+to ...
+'dbm_check = False'
+
 Output of uRADMonitor units is C&deg;, cpm, Pa, ppm, ug/m^3, volts
 
 * Add conversions for __cpm__ to __micro_sievert__
