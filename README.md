@@ -2,9 +2,17 @@
 
 # weewx-uradmon
 
-**Update: 14 Feb 2022**
+**Update: 17 Feb 2022**
 
-If you are using an __existing database__ and you get a schema mismatch then set dbm_check to False in weewx.conf
+* bump to v0.2.9, fix schema check, re-add mysql database option, log schema mismatch (and abort uradmon queries) rather than shutdown weewx.
+
+If you are using an __existing database__ then you can manually edit the weewx.conf entries to point to uradmon.sdb (or uradmon ) rather than the newer uradmon2.sdb (uradmon2) if you want to use that historical data.
+
+Restarting weewx will then report a schema mismatch upon start up due to the new schema (that was introduced for some of the other models) and the original schema being different. To get around this check you will need to edit and set dbm_check to False in weewx.conf (see the example below).
+Weewx will continue to run, but no data from your uradmonitor will be fetched until this mismatch is fixed.
+
+This has been tested and works on databases from 1.x versions, that used either sqlite or mysql. As always, have a fresh, working backup before risking your valuable data.
+
 
 change from ...
 
@@ -14,22 +22,20 @@ to ...
 
 __dbm_check = False__
 
+for existing databases.
+
+If this is a fresh installation (no previous version, nor data) then you need to do none of the above. Once weewx is restarted, uradmon will start adding data to uradmon2.sdb (sqlite), or uradmon2 (mysql)
+
 Output of uRADMonitor units is C&deg;, cpm, Pa, ppm, ug/m^3, volts
 
 * Add conversions for __cpm__ to __micro_sievert__
 * Add Conversions for __Pa__ to __hPa__, __mbar__, __inHG__, __mmHg__
 * Fix missing, b0rked en.conf entries
 
-No release ... yet. Awaiting feedback!
+No release ... yet. Awaiting more feedback!
 Use the [master](https://github.com/glennmckechnie/weewx-uradmon/archive/refs/heads/master.zip) from the github repo.
 
-Also, removed __[[uradmon_mysql]]__ from _install.py_. If it is required for your installation then you can add it manually to the section in weewx.conf...
-```
-[Databases]
-    [[uradmon_mysql]]
-        database_name = uradmon2
-        database_type = MySQL
-```
+By default the sqlite database is used. The mysql stanza is included in weewx.conf, to use that database instead adjust [[uradmon_binding]] accordingly.
 
 
 **Description**

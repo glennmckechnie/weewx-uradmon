@@ -111,7 +111,7 @@ https://sapporohibaku.wordpress.com/2011/10/15/conversion-factor/
 SMB values from 1/150 through to 1/360 ??
 """
 
-urad_version = "0.2.8"
+urad_version = "0.2.9"
 
 
 try:
@@ -145,8 +145,7 @@ except ImportError:
     def logerr(msg):
         logmsg(syslog.LOG_ERR, msg)
 
-
-# the default schema, for A3
+# default schema (include A, A3, D, & Industrial models)
 schema = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
     ('usUnits', 'INTEGER NOT NULL'),
@@ -177,6 +176,7 @@ schema = [
     ('usats', 'INTEGER')
     ]
 """
+# the default schema, for A3
 schema_A3 = [
     ('dateTime', 'INTEGER NOT NULL UNIQUE PRIMARY KEY'),
     ('usUnits', 'INTEGER NOT NULL'),
@@ -329,8 +329,12 @@ class UradMon(weewx.engine.StdService):
                                                   self.data_binding)
             memcol = [x[0] for x in dbm_dict['schema']]
             if dbcol != memcol:
-                raise Exception('schema mismatch: %s != %s' %
-                                (dbcol, memcol))
+                logerr('schema mismatch: %s != %s' % (dbcol, memcol))
+                logerr('Skipping further uradmon queries until the database' +
+                       ' schema mismatch is fixed')
+                return
+                #raise Exception('schema mismatch: %s != %s' %
+                #                (dbcol, memcol))
 
         loginf("uRADMonitor address is %s" % self.rad_addr)
         if self.rad_addr != '':
