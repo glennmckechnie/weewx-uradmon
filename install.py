@@ -17,6 +17,7 @@ urad_config = """
                 [UradMon]
                     data_binding = uradmon_binding
                     urad_debug = True
+                    dbm_check = True
                     uradmon_address = weewx.conf-Enter_your_network_address
                 [DataBindings]
                     [[uradmon_binding]]
