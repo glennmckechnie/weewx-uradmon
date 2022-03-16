@@ -70,12 +70,12 @@ weewx.units.MetricWXUnits['group_urad_pressure'] = 'Pa'
 
 weewx.units.default_unit_format_dict['cpm'] = '%.0f'
 weewx.units.default_unit_format_dict['ppm'] = '%.0f'
-weewx.units.default_unit_format_dict['micro_sievert'] = '%.2f'
+weewx.units.default_unit_format_dict['micro_sievert_hour'] = '%.2f'
 weewx.units.default_unit_format_dict['Pa'] = '%.0f'
 
 weewx.units.default_unit_label_dict['cpm'] = ' cpm'
 weewx.units.default_unit_label_dict['ppm'] = 'ppm'
-weewx.units.default_unit_label_dict['micro_sievert'] = ' µSv/h'
+weewx.units.default_unit_label_dict['micro_sievert_hour'] = ' µSv/h'
 weewx.units.default_unit_label_dict['Pa'] = 'Pa '
 
 # weewx.units.conversionDict.update(
@@ -88,14 +88,14 @@ weewx.units.conversionDict.update(
                  'kPa': lambda x: x * 0.0001, 'hPa': lambda x: x * 0.01}})
 
 # The value recorded from our uRADMon counters is listed as cpm, rather than
-# microsieverts.
+# micro_sievert/hour.
 # using a factor of 1/110 for the conversion!
 weewx.units.conversionDict.update(
-         {'cpm': {'micro_sievert': lambda x: x * 0.00909},
-          'micro_sievert': {'cpm': lambda x: x * 110}})
+         {'cpm': {'micro_sievert_hour': lambda x: x * 0.00909},
+          'micro_sievert_hour': {'cpm': lambda x: x * 110}})
 
 """
-cpm <to> microsieverts?
+cpm <to> micro_sievert_hour?
 
 https://physics.stackexchange.com/questions/272649/how-does-a-geiger-
  counter-such-as-rd1706-converts-counts-per-minute-to-micro-s#272761

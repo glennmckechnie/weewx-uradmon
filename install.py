@@ -54,7 +54,8 @@ urad_config = """
                               group_temperature = degree_C
                               # Time options are second', 'day ', 'hour,
                               group_elapsed = second
-                              # Radiation options are 'cpm' or 'micro_sievert'
+                              # Radiation options are 'cpm' or
+                              # 'micro_sievert_hour'
                               group_ion_radiation = cpm
 
 """
@@ -62,8 +63,10 @@ urad_config = """
 
 urad_dict = configobj.ConfigObj(StringIO(urad_config))
 
+
 def loader():
     return UradmonInstaller()
+
 
 class UradmonInstaller(ExtensionInstaller):
     def __init__(self):
@@ -87,18 +90,18 @@ class UradmonInstaller(ExtensionInstaller):
                      'skins/uradmon/uradmon.inc',
                      'skins/uradmon/seasons.css',
                      'skins/uradmon/standard.js',
-                    ]),
+                     ]),
                    ('skins/uradmon/font',
                     ['skins/uradmon/font/OpenSans.woff',
                      'skins/uradmon/font/OpenSans.woff2',
                      'skins/uradmon/font/OpenSans-Bold.ttf',
                      'skins/uradmon/font/OpenSans-Regular.ttf',
-                    ]),
+                     ]),
                    ('skins/uradmon/images',
                     ['skins/uradmon/images/urad-favicon.ico',
-                    ]),
+                     ]),
                    ('skins/uradmon/lang',
                     ['skins/uradmon/lang/en.conf',
-                    ])
-                  ]
+                     ])
+                   ]
         )
