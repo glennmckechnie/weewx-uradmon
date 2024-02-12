@@ -65,7 +65,7 @@ The Report will generate a seperate html page in the style of the Seasons skin. 
 
    For the newer weewx versions 5.x use...
 
-   <pre>sudo wee_extension --install weewx-uradmon.zip</pre>
+   <pre>sudo weectl extension install weewx-uradmon.zip</pre>
 
    For previous versions - 4.x use the following...
 
