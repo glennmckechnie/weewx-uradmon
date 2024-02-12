@@ -61,9 +61,16 @@ The Report will generate a seperate html page in the style of the Seasons skin. 
     (Alternatively, it is packaged as a release under https://github.com/glennmckechnie/weewx-uradmon/releases
     This gives a fixed (in time) version. You will need to adjust the following instructions by using the filename you downloaded.)
 
-2. Change to that directory and run the wee_extension installer
+2. Change to that directory and run the weewx extension installer for your version
+
+   For the newer weewx versions 5.x use...
 
    <pre>sudo wee_extension --install weewx-uradmon.zip</pre>
+
+   For previous versions - 4.x use the following...
+
+   <pre>sudo wee_extension --install weewx-uradmon.zip</pre>
+
 
    (or if using a release version, substitute the filename weewx-uradmon.zip with the downloaded file name (eg: v0.1.4.zip))
 
